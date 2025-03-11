@@ -14,7 +14,25 @@ public class SimuladorArchivos {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+
+        StorageDevice sd = new StorageDevice(20);
+
+        sd.asignarBloques(5, "document.pdf");
+
+        sd.imprimir();
+
+        sd.remplazar("", 2);
+
+        sd.imprimir();
+
+        sd.asignarBloques(3, "sexy.exe");
+
+        sd.imprimir();
+
+        sd.removerArchivo("document.pdf");
+
+        sd.imprimir();
+
     }
-    
+
 }
