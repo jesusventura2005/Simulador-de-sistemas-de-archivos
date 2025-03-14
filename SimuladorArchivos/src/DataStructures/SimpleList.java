@@ -81,18 +81,30 @@ public class SimpleList {
         }
     }
 
-    public void printList() {
+    public String printList() {
         if (isEmpty()) {
-            System.out.println("La lista está vacía.");
-            return;
+            return "La lista está vacía.";
         }
 
+        StringBuilder sb = new StringBuilder(); 
         Nodo actual = getpFirst();
+        int count = 0;
+
         while (actual != null) {
-            System.out.print(actual.getInfo() + " -> ");
+            sb.append("[").append(actual.getInfo()).append("] ");
             actual = actual.getpNext();
+            count++;
+
+            if (count % 5 == 0) {
+                sb.append("\n"); 
+            }
         }
-        System.out.println("null");
+
+        if (count % 5 != 0) {
+            sb.append("\n"); // Salto de línea si la última fila no está completa
+        }
+
+        return sb.toString(); // Retorna la cadena construida
     }
 
     public void vaciar() {
@@ -143,7 +155,5 @@ public class SimpleList {
         }
         actual.setInfo(elemento);
     }
-
-
 
 }

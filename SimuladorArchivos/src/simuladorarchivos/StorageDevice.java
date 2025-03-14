@@ -15,6 +15,12 @@ public class StorageDevice {
     private SimpleList bloques;
     private int tamañoSD;
 
+    public StorageDevice(SimpleList bloques, int tamañoSD) {
+        this.bloques = bloques;
+        this.tamañoSD = tamañoSD;
+    }
+    
+
     public StorageDevice(int tamañoSD) {
         this.tamañoSD = tamañoSD;
         this.bloques = new SimpleList();
@@ -25,9 +31,9 @@ public class StorageDevice {
     
     
     
-    public  void imprimir(){
+    public  String imprimir(){
         
-        bloques.printList();
+       return bloques.printList();
     
     }
     
@@ -94,6 +100,9 @@ public void removerArchivo(String nombreArchivo) {
     
     
     // Getters y setters 
+
+
+
     public SimpleList getBloques() {
         return bloques;
     }

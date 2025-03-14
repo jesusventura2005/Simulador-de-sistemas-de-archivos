@@ -21,8 +21,6 @@ public class Files {
         this.tamañoBloques = tamañoBloques;
         this.tamañoArchivo = tamañoArchivo;
         
-        
-        
     }
     
     
