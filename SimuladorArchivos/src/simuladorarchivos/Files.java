@@ -15,15 +15,19 @@ public class Files {
     private String permisos;
     private String modo;
 
-    public Files(String nombre, SimpleList lista, int tamañoBloques, int primerBloque, int tamañoArchivo, String permisos, String modo) {
+    public Files(String nombre, int tamañoBloques) {
         this.nombre = nombre;
-        this.lista = lista;
+        this.lista = new SimpleList();
         this.tamañoBloques = tamañoBloques;
-        this.tamañoArchivo = tamañoArchivo;
-        
+
     }
-    
-    
+
+    public void agregarBloques(int cantidad) {
+        for (int i = 0; i < cantidad; i++) {
+            lista.insertLast(nombre + " " + i);
+        }
+    }
+
     /// Aun no se si hacer los metodos aqui o en el interfaz , hablar con el chinox 
 
     
@@ -77,6 +81,5 @@ public class Files {
     public void setModo(String modo) {
         this.modo = modo;
     }
-
 
 }

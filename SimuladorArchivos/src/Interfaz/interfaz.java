@@ -5,6 +5,7 @@
 package Interfaz;
 
 import DataStructures.SimpleList;
+import simuladorarchivos.Files;
 import simuladorarchivos.StorageDevice;
 
 /**
@@ -13,7 +14,10 @@ import simuladorarchivos.StorageDevice;
  */
 public class interfaz extends javax.swing.JFrame {
 
-    private String storageString;
+    String storageString;
+    int cantidadBloques = 25;
+    StorageDevice sd = new StorageDevice(cantidadBloques);
+    SimpleList initStorage = sd.getBloques();
 
     /**
      * Creates new form interfaz
@@ -21,9 +25,6 @@ public class interfaz extends javax.swing.JFrame {
     public interfaz() {
         initComponents();
 
-        int cantidadBloques = 25;
-        StorageDevice sd = new StorageDevice(cantidadBloques);
-        SimpleList initStorage = sd.getBloques();
         storageString = initStorage.printList();
         storageDevicePanel.setText(storageString);
     }
@@ -58,7 +59,7 @@ public class interfaz extends javax.swing.JFrame {
         CantidadBloquesTextField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         ArchivoActualizarSelect = new javax.swing.JComboBox<>();
-        CreateButton = new javax.swing.JButton();
+        CreateFileButton = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
         CreateButton3 = new javax.swing.JButton();
         jSeparator10 = new javax.swing.JSeparator();
@@ -191,10 +192,15 @@ public class interfaz extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Tipo de archivo");
 
-        CreateButton.setBackground(new java.awt.Color(0, 139, 252));
-        CreateButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        CreateButton.setForeground(new java.awt.Color(0, 0, 0));
-        CreateButton.setText("CREAR ARCHIVO/DIRECTORIO");
+        CreateFileButton.setBackground(new java.awt.Color(0, 139, 252));
+        CreateFileButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        CreateFileButton.setForeground(new java.awt.Color(0, 0, 0));
+        CreateFileButton.setText("CREAR ARCHIVO/DIRECTORIO");
+        CreateFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CreateFileButtonActionPerformed(evt);
+            }
+        });
 
         CreateButton3.setBackground(new java.awt.Color(255, 208, 79));
         CreateButton3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -300,7 +306,7 @@ public class interfaz extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addComponent(CreateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(CreateFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(59, 59, 59))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                                 .addComponent(ActualizarButton)
@@ -330,7 +336,7 @@ public class interfaz extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TipoArchivoSelect1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(CreateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(CreateFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -478,6 +484,29 @@ public class interfaz extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_TipoArchivoSelect1ActionPerformed
 
+    private void CreateFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFileButtonActionPerformed
+        // TODO add your handling code here:
+        String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
+        int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
+        String nombre = NameArchivoTextField1.getText();
+
+        if (tipoArchivo == "Archivo") {
+            Files file = new Files(nombre, numeroBloques);
+            file.agregarBloques(numeroBloques);
+            sd.asignarBloques(file.getTamañoBloques(), nombre);
+            
+            storageDevicePanel.setText(sd.imprimir());
+            
+            
+            
+            
+            
+        }
+
+
+
+    }//GEN-LAST:event_CreateFileButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -522,8 +551,8 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JButton BorrarButton;
     private javax.swing.JTextField CantidadBloquesTextField;
     private javax.swing.JButton CargarButton;
-    private javax.swing.JButton CreateButton;
     private javax.swing.JButton CreateButton3;
+    private javax.swing.JButton CreateFileButton;
     private javax.swing.JButton GuardarConfigButton;
     private javax.swing.JTextField NameArchivoActualizarTextField;
     private javax.swing.JTextField NameArchivoTextField1;
