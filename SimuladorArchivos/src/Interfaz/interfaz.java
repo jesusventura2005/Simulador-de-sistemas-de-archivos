@@ -5,6 +5,8 @@
 package Interfaz;
 
 import DataStructures.SimpleList;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import simuladorarchivos.Files;
 import simuladorarchivos.StorageDevice;
 
@@ -18,6 +20,34 @@ public class interfaz extends javax.swing.JFrame {
     int cantidadBloques = 25;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
+
+    public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
+        String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
+
+        if (texto.isEmpty()) {
+            // Mostrar un mensaje de error o realizar alguna acción (p. ej., cambiar el foco)
+            javax.swing.JOptionPane.showMessageDialog(null, "El campo '" + nombreCampo + "' no puede estar vacío.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            textField.requestFocus(); // Opcional: enfocar el campo para que el usuario lo corrija
+            return false; // Indica que la validación falló
+        }
+
+        return true; // Indica que la validación fue exitosa
+    }
+
+    public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
+        try {
+            int valor = Integer.parseInt(textField.getText());
+            if (valor > 0) {
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
 
     /**
      * Creates new form interfaz
@@ -191,6 +221,12 @@ public class interfaz extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("Cantidad de bloques asignados");
 
+        CantidadBloquesTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CantidadBloquesTextFieldActionPerformed(evt);
+            }
+        });
+
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Tipo de archivo");
 
@@ -213,7 +249,7 @@ public class interfaz extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("BORRAR");
 
-        TipoArchivoSelect1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Archivo", "Fichero" }));
+        TipoArchivoSelect1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Archivo", "Directorio" }));
         TipoArchivoSelect1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 TipoArchivoSelect1ActionPerformed(evt);
@@ -517,7 +553,12 @@ public class interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_ArchivoActualizarSelect1ActionPerformed
 
     private void TipoArchivoSelect1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TipoArchivoSelect1ActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here
+        if (TipoArchivoSelect1.getSelectedItem().equals("Directorio")) {
+            CantidadBloquesTextField.setEnabled(false);
+        } else {
+            CantidadBloquesTextField.setEnabled(true);
+        }
     }//GEN-LAST:event_TipoArchivoSelect1ActionPerformed
 
     private void CreateFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFileButtonActionPerformed
@@ -563,6 +604,10 @@ public class interfaz extends javax.swing.JFrame {
         AdminButton.setEnabled(true);
         UserButton.setEnabled(false);
     }//GEN-LAST:event_UserButtonActionPerformed
+
+    private void CantidadBloquesTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CantidadBloquesTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CantidadBloquesTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
