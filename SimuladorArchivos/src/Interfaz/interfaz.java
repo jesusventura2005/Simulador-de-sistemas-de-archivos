@@ -5,8 +5,13 @@
 package Interfaz;
 
 import DataStructures.SimpleList;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import simuladorarchivos.Directory;
 import simuladorarchivos.Files;
 import simuladorarchivos.StorageDevice;
@@ -23,58 +28,84 @@ public class interfaz extends javax.swing.JFrame {
     SimpleList initStorage = sd.getBloques();
     Directory raiz = new Directory(storageString, initStorage);
 
-    /////--------> plantea esto bien directorio raiz /// 
+    DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raiz");
+
+    public class ArbolDirectorios extends JFrame {
+
+        public ArbolDirectorios() {
+            // Crear el nodo raíz como un directorio
+            DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Raíz");
+
+
+            DefaultTreeModel modelo = new DefaultTreeModel(raiz);
+            JTree arbol = new JTree(modelo);
+            JScrollPane scrollPane = new JScrollPane(arbol);
+
+            this.add(scrollPane);
+            this.setSize(300, 200);
+            this.setVisible(true);
+            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        }
+
+        private void agregarDirectorio(DefaultMutableTreeNode padre, String nombreDirectorio) {
+            DefaultMutableTreeNode directorio = new DefaultMutableTreeNode(nombreDirectorio);
+            padre.add(directorio);
+        }
+    
+    }
+
+        /////--------> plantea esto bien directorio raiz /// 
 
     public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
-        String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
+            String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
 
-        if (texto.isEmpty()) {
-            // Mostrar un mensaje de error o realizar alguna acción (p. ej., cambiar el foco)
-            javax.swing.JOptionPane.showMessageDialog(null, "El campo '" + nombreCampo + "' no puede estar vacío.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-            textField.requestFocus(); // Opcional: enfocar el campo para que el usuario lo corrija
-            return false; // Indica que la validación falló
+            if (texto.isEmpty()) {
+                // Mostrar un mensaje de error o realizar alguna acción (p. ej., cambiar el foco)
+                javax.swing.JOptionPane.showMessageDialog(null, "El campo '" + nombreCampo + "' no puede estar vacío.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                textField.requestFocus(); // Opcional: enfocar el campo para que el usuario lo corrija
+                return false; // Indica que la validación falló
+            }
+
+            return true; // Indica que la validación fue exitosa
         }
 
-        return true; // Indica que la validación fue exitosa
-    }
-
-    public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
-        try {
-            int valor = Integer.parseInt(textField.getText());
-            if (valor > 0) {
-                return true;
-            } else {
-                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
+        public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
+            try {
+                int valor = Integer.parseInt(textField.getText());
+                if (valor > 0) {
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
-            return false;
         }
-    }
 
-    /**
-     * Creates new form interfaz
-     */
-    public interfaz() {
-        initComponents();
+        /**
+         * Creates new form interfaz
+         */
+        public interfaz() {
+            initComponents();
+            new ArbolDirectorios();
+            CreateFileButton.setEnabled(false);
+            ActualizarButton.setEnabled(false);
+            BorrarButton.setEnabled(false);
+            AdminButton.setEnabled(true);
+            UserButton.setEnabled(false);
 
-        CreateFileButton.setEnabled(false);
-        ActualizarButton.setEnabled(false);
-        BorrarButton.setEnabled(false);
-        AdminButton.setEnabled(true);
-        UserButton.setEnabled(false);
+            storageString = initStorage.printList();
+            storageDevicePanel.setText(storageString);
+        }
 
-        storageString = initStorage.printList();
-        storageDevicePanel.setText(storageString);
-    }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+        /**
+         * This method is called from within the constructor to initialize the
+         * form. WARNING: Do NOT modify this code. The content of this method is
+         * always regenerated by the Form Editor.
+         */
+        @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -120,6 +151,7 @@ public class interfaz extends javax.swing.JFrame {
         AdminButton = new javax.swing.JButton();
         UserButton = new javax.swing.JButton();
         GuardarConfigButton = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -147,14 +179,15 @@ public class interfaz extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(70, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addGap(201, 201, 201))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(84, 84, 84)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(127, 127, 127)
+                        .addComponent(jLabel2)))
+                .addContainerGap(97, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,7 +195,7 @@ public class interfaz extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -486,6 +519,17 @@ public class interfaz extends javax.swing.JFrame {
         GuardarConfigButton.setForeground(new java.awt.Color(28, 28, 28));
         GuardarConfigButton.setText("GUARDAR CONFIGURACION");
 
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 271, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 348, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -508,15 +552,19 @@ public class interfaz extends javax.swing.JFrame {
                         .addGap(0, 189, Short.MAX_VALUE))
                     .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(103, 103, 103)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addGap(0, 8, Short.MAX_VALUE)
+                    .addGap(0, 42, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(7, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator3)
@@ -526,7 +574,9 @@ public class interfaz extends javax.swing.JFrame {
                     .addComponent(GuardarConfigButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(720, 720, 720))
+                .addGap(292, 292, 292)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(80, 80, 80))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap(43, Short.MAX_VALUE)
@@ -567,8 +617,6 @@ public class interfaz extends javax.swing.JFrame {
         String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
         String nombre = NameArchivoTextField1.getText();
         String dirrectorio = DirectorySelect.getSelectedItem().toString();
-        
-        
 
         if (tipoArchivo == "Archivo") {
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
@@ -576,30 +624,24 @@ public class interfaz extends javax.swing.JFrame {
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             storageDevicePanel.setText(sd.imprimir());
-            
-            
-            if(dirrectorio != "Raiz"){
-                
-    
-            }else {
+
+            if (dirrectorio != "Raiz") {
+
+            } else {
                 raiz.agregar(file);
-                 raiz.getFiles().printListToConsole();
+                raiz.getFiles().printListToConsole();
 
-                
             }
-            
-            
-        }else if(tipoArchivo == "Directorio"){  
 
-            Directory directorio = new Directory(nombre,new SimpleList());
+        } else if (tipoArchivo == "Directorio") {
+
+            Directory directorio = new Directory(nombre, new SimpleList());
             DirectorySelect.addItem(nombre);
-            
-            
-            if(dirrectorio != "Raiz"){
-                
-    
-            }else {
-                
+
+            if (dirrectorio != "Raiz") {
+
+            } else {
+
                 raiz.agregar(directorio);
                 raiz.getFiles().printListToConsole();
             }
@@ -628,41 +670,41 @@ public class interfaz extends javax.swing.JFrame {
         UserButton.setEnabled(false);
     }//GEN-LAST:event_UserButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        /**
+         * @param args the command line arguments
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+        public static void main(String args[]) {
+            /* Set the Nimbus look and feel */
+            //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+            /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+             */
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
                 }
+            } catch (ClassNotFoundException ex) {
+                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            //</editor-fold>
+
+            /* Create and display the form */
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    new interfaz().setVisible(true);
+
+                }
+            });
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new interfaz().setVisible(true);
-
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ActualizarButton;
@@ -694,6 +736,7 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
