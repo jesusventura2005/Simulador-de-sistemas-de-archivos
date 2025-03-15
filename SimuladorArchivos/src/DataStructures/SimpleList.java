@@ -39,6 +39,33 @@ public class SimpleList {
         return false;
     }
 
+    
+    
+    public void printListToConsole() {
+    if (isEmpty()) {
+        System.out.println("La lista está vacía.");
+        return;
+    }
+
+    Nodo actual = pFirst;
+    int count = 0;
+
+    while (actual != null) {
+        System.out.print("[" + actual.getInfo() + "] ");
+        actual = actual.getpNext();
+        count++;
+
+        if (count % 5 == 0) {
+            System.out.println(); 
+        }
+    }
+
+    if (count % 5 != 0) {
+        System.out.println(); 
+    }
+}
+    
+    
     public void insertLast(Object x) {
         Nodo nuevo = new Nodo(x);
         if (this.isEmpty()) {
@@ -106,6 +133,9 @@ public class SimpleList {
 
         return sb.toString(); // Retorna la cadena construida
     }
+    
+    
+    
 
     public void vaciar() {
         this.pFirst = null;

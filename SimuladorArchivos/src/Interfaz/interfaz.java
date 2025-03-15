@@ -7,6 +7,7 @@ package Interfaz;
 import DataStructures.SimpleList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import simuladorarchivos.Directory;
 import simuladorarchivos.Files;
 import simuladorarchivos.StorageDevice;
 
@@ -20,6 +21,7 @@ public class interfaz extends javax.swing.JFrame {
     int cantidadBloques = 25;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
+    Directory raiz = new Directory(storageString, initStorage, initStorage); /////--------> plantea esto bien directorio raiz /// 
 
     public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
         String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
@@ -300,6 +302,7 @@ public class interfaz extends javax.swing.JFrame {
         jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setText("Directorio");
 
+        DirectorySelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Raiz" }));
         DirectorySelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DirectorySelectActionPerformed(evt);
@@ -573,11 +576,35 @@ public class interfaz extends javax.swing.JFrame {
         String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
         int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
         String nombre = NameArchivoTextField1.getText();
+        String dirrectorio = DirectorySelect.getSelectedItem().toString();
+        
+        
 
         if (tipoArchivo == "Archivo") {
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
+            storageDevicePanel.setText(sd.imprimir());
+            
+            
+            if(dirrectorio != "Raiz"){
+                
+                 /////--------> logica para meter un archivo en el directorio diferente a raiz 
+    
+            }else {
+                    /////--------> logica para meter un archivo en el directorio raiz
+            }
+            
+            
+        }else if(tipoArchivo == "Directorio"){   /////--------> logica para crear directorio 
+            
+            
+            
+            Directory directorio = new Directory(nombre, raiz, initStorage);
+            
+        
+        
+        }
 
             storageDevicePanel.setText(sd.imprimir());
 
@@ -696,4 +723,3 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JTextArea storageDevicePanel;
     // End of variables declaration//GEN-END:variables
 
-}
