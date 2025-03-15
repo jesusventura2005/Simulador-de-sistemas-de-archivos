@@ -5,6 +5,8 @@
 package Interfaz;
 
 import DataStructures.SimpleList;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import simuladorarchivos.Directory;
 import simuladorarchivos.Files;
 import simuladorarchivos.StorageDevice;
@@ -14,8 +16,6 @@ import simuladorarchivos.StorageDevice;
  * @author manch
  */
 public class interfaz extends javax.swing.JFrame {
-    
-    public boolean isAdmin = false;
 
     String storageString;
     int cantidadBloques = 25;
@@ -23,11 +23,45 @@ public class interfaz extends javax.swing.JFrame {
     SimpleList initStorage = sd.getBloques();
     Directory raiz = new Directory(storageString, initStorage, initStorage); /////--------> plantea esto bien directorio raiz /// 
 
+    public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
+        String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
+
+        if (texto.isEmpty()) {
+            // Mostrar un mensaje de error o realizar alguna acción (p. ej., cambiar el foco)
+            javax.swing.JOptionPane.showMessageDialog(null, "El campo '" + nombreCampo + "' no puede estar vacío.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            textField.requestFocus(); // Opcional: enfocar el campo para que el usuario lo corrija
+            return false; // Indica que la validación falló
+        }
+
+        return true; // Indica que la validación fue exitosa
+    }
+
+    public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
+        try {
+            int valor = Integer.parseInt(textField.getText());
+            if (valor > 0) {
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
     /**
      * Creates new form interfaz
      */
     public interfaz() {
         initComponents();
+
+        CreateFileButton.setEnabled(false);
+        ActualizarButton.setEnabled(false);
+        BorrarButton.setEnabled(false);
+        AdminButton.setEnabled(true);
+        UserButton.setEnabled(false);
 
         storageString = initStorage.printList();
         storageDevicePanel.setText(storageString);
