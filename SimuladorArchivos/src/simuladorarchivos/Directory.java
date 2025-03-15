@@ -6,32 +6,22 @@ package simuladorarchivos;
 
 import DataStructures.SimpleList;
 
-
-
-
-
 public class Directory {
-    
-    
+
     private String name;
     private SimpleList files;
 
-
-
-
-    
-
-    public Directory(String nombre, SimpleList archivos, SimpleList subdirectorios) {
+    public Directory(String nombre, SimpleList archivos) {
         this.name = name;
-        this.files = files;
+        this.files = new SimpleList();
 
     }
-    
-    
-    
-    
-    
-    
+
+    public void agregar(Object file) {
+
+        files.insertLast(file);
+
+    }
 
     public String getName() {
         return name;
@@ -48,11 +38,5 @@ public class Directory {
     public void setFiles(SimpleList files) {
         this.files = files;
     }
-    
-    
-    
-    
-    
-    
-    
+
 }
