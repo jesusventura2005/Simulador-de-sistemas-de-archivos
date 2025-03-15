@@ -13,8 +13,6 @@ import simuladorarchivos.StorageDevice;
  * @author manch
  */
 public class interfaz extends javax.swing.JFrame {
-    
-    public boolean isAdmin = false;
 
     String storageString;
     int cantidadBloques = 25;
@@ -26,7 +24,6 @@ public class interfaz extends javax.swing.JFrame {
      */
     public interfaz() {
         initComponents();
-
         storageString = initStorage.printList();
         storageDevicePanel.setText(storageString);
     }
@@ -138,14 +135,14 @@ public class interfaz extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Bloques", "Direccion 1er Bloque", "Tipo"
+                "Nombre", "Bloques", "Direccion 1er Bloque"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -161,7 +158,6 @@ public class interfaz extends javax.swing.JFrame {
             TablaAsignacion.getColumnModel().getColumn(0).setResizable(false);
             TablaAsignacion.getColumnModel().getColumn(1).setResizable(false);
             TablaAsignacion.getColumnModel().getColumn(2).setResizable(false);
-            TablaAsignacion.getColumnModel().getColumn(3).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -226,6 +222,12 @@ public class interfaz extends javax.swing.JFrame {
 
         jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Nombre del archivo / directorio");
+
+        NameArchivoTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NameArchivoTextField1ActionPerformed(evt);
+            }
+        });
 
         ActualizarButton.setBackground(new java.awt.Color(0, 139, 252));
         ActualizarButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -426,11 +428,21 @@ public class interfaz extends javax.swing.JFrame {
         AdminButton.setBackground(new java.awt.Color(61, 150, 209));
         AdminButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         AdminButton.setText("MODO ADMINISTRADOR");
+        AdminButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AdminButtonActionPerformed(evt);
+            }
+        });
 
         UserButton.setBackground(new java.awt.Color(150, 150, 150));
         UserButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         UserButton.setForeground(new java.awt.Color(28, 28, 28));
         UserButton.setText("MODO USUARIO");
+        UserButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UserButtonActionPerformed(evt);
+            }
+        });
 
         GuardarConfigButton.setBackground(new java.awt.Color(38, 171, 75));
         GuardarConfigButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
@@ -518,15 +530,10 @@ public class interfaz extends javax.swing.JFrame {
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
-            
-            storageDevicePanel.setText(sd.imprimir());
-            
-            
-            
-            
-            
-        }
 
+            storageDevicePanel.setText(sd.imprimir());
+
+        }
 
 
     }//GEN-LAST:event_CreateFileButtonActionPerformed
@@ -534,6 +541,28 @@ public class interfaz extends javax.swing.JFrame {
     private void DirectorySelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DirectorySelectActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_DirectorySelectActionPerformed
+
+    private void AdminButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdminButtonActionPerformed
+        // TODO add your handling code here:
+        CreateFileButton.setEnabled(true);
+        ActualizarButton.setEnabled(true);
+        BorrarButton.setEnabled(true);
+        AdminButton.setEnabled(false);
+        UserButton.setEnabled(true);
+    }//GEN-LAST:event_AdminButtonActionPerformed
+
+    private void NameArchivoTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NameArchivoTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NameArchivoTextField1ActionPerformed
+
+    private void UserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserButtonActionPerformed
+        // TODO add your handling code here:
+        CreateFileButton.setEnabled(false);
+        ActualizarButton.setEnabled(false);
+        BorrarButton.setEnabled(false);
+        AdminButton.setEnabled(true);
+        UserButton.setEnabled(false);
+    }//GEN-LAST:event_UserButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -566,7 +595,6 @@ public class interfaz extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new interfaz().setVisible(true);
-
             }
         });
     }
@@ -615,4 +643,5 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JTextArea storageDevicePanel;
     // End of variables declaration//GEN-END:variables
+
 }
