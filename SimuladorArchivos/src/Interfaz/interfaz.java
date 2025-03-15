@@ -21,7 +21,9 @@ public class interfaz extends javax.swing.JFrame {
     int cantidadBloques = 25;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
-    Directory raiz = new Directory(storageString, initStorage, initStorage); /////--------> plantea esto bien directorio raiz /// 
+    Directory raiz = new Directory(storageString, initStorage, initStorage);
+
+    /////--------> plantea esto bien directorio raiz /// 
 
     public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
         String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
@@ -543,6 +545,11 @@ public class interfaz extends javax.swing.JFrame {
 
     private void TipoArchivoSelect1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TipoArchivoSelect1ActionPerformed
         // TODO add your handling code here:
+        if (TipoArchivoSelect1.getSelectedItem().equals("Directorio")) {
+            CantidadBloquesTextField.setEnabled(false);
+        } else {
+            CantidadBloquesTextField.setEnabled(true);
+        }
     }//GEN-LAST:event_TipoArchivoSelect1ActionPerformed
 
     private void CreateFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFileButtonActionPerformed
@@ -551,35 +558,32 @@ public class interfaz extends javax.swing.JFrame {
         int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
         String nombre = NameArchivoTextField1.getText();
         String dirrectorio = DirectorySelect.getSelectedItem().toString();
-        
-        
 
         if (tipoArchivo == "Archivo") {
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             storageDevicePanel.setText(sd.imprimir());
+
+            if (dirrectorio != "Raiz") {
+
+              
             
-            
-            if(dirrectorio != "Raiz"){
-                
-                 /////--------> logica para meter un archivo en el directorio diferente a raiz 
+          /////--------> logica para meter un archivo en el directorio diferente a raiz 
     
             }else {
                     /////--------> logica para meter un archivo en el directorio raiz
             }
             
             
-        }else if(tipoArchivo == "Directorio"){   /////--------> logica para crear directorio 
+        }else if (tipoArchivo == "Directorio") {
+            /////--------> logica para crear directorio 
             
             
             
             Directory directorio = new Directory(nombre, raiz, initStorage);
-            
-        
-        
-        }
 
+        }
 
 
     }//GEN-LAST:event_CreateFileButtonActionPerformed
