@@ -54,6 +54,13 @@ public class interfaz extends javax.swing.JFrame {
      */
     public interfaz() {
         initComponents();
+
+        CreateFileButton.setEnabled(false);
+        ActualizarButton.setEnabled(false);
+        BorrarButton.setEnabled(false);
+        AdminButton.setEnabled(true);
+        UserButton.setEnabled(false);
+
         storageString = initStorage.printList();
         storageDevicePanel.setText(storageString);
     }
