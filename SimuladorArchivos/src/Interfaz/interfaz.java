@@ -21,7 +21,7 @@ public class interfaz extends javax.swing.JFrame {
     int cantidadBloques = 25;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
-    Directory raiz = new Directory(storageString, initStorage, initStorage);
+    Directory raiz = new Directory(storageString, initStorage);
 
     /////--------> plantea esto bien directorio raiz /// 
 
@@ -255,7 +255,7 @@ public class interfaz extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("BORRAR");
 
-        TipoArchivoSelect1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Archivo", "Fichero" }));
+        TipoArchivoSelect1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Archivo", "Directorio" }));
         TipoArchivoSelect1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 TipoArchivoSelect1ActionPerformed(evt);
@@ -565,37 +565,45 @@ public class interfaz extends javax.swing.JFrame {
     private void CreateFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFileButtonActionPerformed
         // TODO add your handling code here:
         String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
-        int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
         String nombre = NameArchivoTextField1.getText();
         String dirrectorio = DirectorySelect.getSelectedItem().toString();
+        
+        
 
         if (tipoArchivo == "Archivo") {
+            int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             storageDevicePanel.setText(sd.imprimir());
-
-            if (dirrectorio != "Raiz") {
-
-              
             
-          /////--------> logica para meter un archivo en el directorio diferente a raiz 
+            
+            if(dirrectorio != "Raiz"){
+                
     
             }else {
-                    /////--------> logica para meter un archivo en el directorio raiz
+                raiz.agregar(file);
+                 raiz.getFiles().printListToConsole();
+
+                
             }
             
             
-        }else if (tipoArchivo == "Directorio") {
-            /////--------> logica para crear directorio 
-            
-            
-            
-            Directory directorio = new Directory(nombre, raiz, initStorage);
+        }else if(tipoArchivo == "Directorio"){  
 
+            Directory directorio = new Directory(nombre,new SimpleList());
+            DirectorySelect.addItem(nombre);
+            
+            
+            if(dirrectorio != "Raiz"){
+                
+    
+            }else {
+                
+                raiz.agregar(directorio);
+                raiz.getFiles().printListToConsole();
+            }
         }
-
-
     }//GEN-LAST:event_CreateFileButtonActionPerformed
 
     private void DirectorySelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DirectorySelectActionPerformed
