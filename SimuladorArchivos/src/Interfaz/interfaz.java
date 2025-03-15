@@ -465,11 +465,21 @@ public class interfaz extends javax.swing.JFrame {
         AdminButton.setBackground(new java.awt.Color(61, 150, 209));
         AdminButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         AdminButton.setText("MODO ADMINISTRADOR");
+        AdminButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AdminButtonActionPerformed(evt);
+            }
+        });
 
         UserButton.setBackground(new java.awt.Color(150, 150, 150));
         UserButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         UserButton.setForeground(new java.awt.Color(28, 28, 28));
         UserButton.setText("MODO USUARIO");
+        UserButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UserButtonActionPerformed(evt);
+            }
+        });
 
         GuardarConfigButton.setBackground(new java.awt.Color(38, 171, 75));
         GuardarConfigButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
@@ -591,6 +601,24 @@ public class interfaz extends javax.swing.JFrame {
     private void DirectorySelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DirectorySelectActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_DirectorySelectActionPerformed
+
+    private void AdminButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdminButtonActionPerformed
+        // TODO add your handling code here:
+        CreateFileButton.setEnabled(true);
+        ActualizarButton.setEnabled(true);
+        BorrarButton.setEnabled(true);
+        AdminButton.setEnabled(false);
+        UserButton.setEnabled(true);
+    }//GEN-LAST:event_AdminButtonActionPerformed
+
+    private void UserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserButtonActionPerformed
+        // TODO add your handling code here:
+        CreateFileButton.setEnabled(false);
+        ActualizarButton.setEnabled(false);
+        BorrarButton.setEnabled(false);
+        AdminButton.setEnabled(true);
+        UserButton.setEnabled(false);
+    }//GEN-LAST:event_UserButtonActionPerformed
 
     /**
      * @param args the command line arguments

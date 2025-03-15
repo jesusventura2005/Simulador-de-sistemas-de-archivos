@@ -685,6 +685,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="MODO ADMINISTRADOR"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AdminButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="UserButton">
       <Properties>
@@ -699,6 +702,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="MODO USUARIO"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="UserButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="GuardarConfigButton">
       <Properties>
