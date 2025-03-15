@@ -5,6 +5,8 @@
 package Interfaz;
 
 import DataStructures.SimpleList;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import simuladorarchivos.Directory;
 import simuladorarchivos.Files;
 import simuladorarchivos.StorageDevice;
@@ -14,20 +16,54 @@ import simuladorarchivos.StorageDevice;
  * @author manch
  */
 public class interfaz extends javax.swing.JFrame {
-    
-    public boolean isAdmin = false;
 
     String storageString;
     int cantidadBloques = 25;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
-    Directory raiz = new Directory(storageString, initStorage, initStorage); /////--------> plantea esto bien directorio raiz /// 
+    Directory raiz = new Directory(storageString, initStorage, initStorage);
+
+    /////--------> plantea esto bien directorio raiz /// 
+
+    public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
+        String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
+
+        if (texto.isEmpty()) {
+            // Mostrar un mensaje de error o realizar alguna acción (p. ej., cambiar el foco)
+            javax.swing.JOptionPane.showMessageDialog(null, "El campo '" + nombreCampo + "' no puede estar vacío.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            textField.requestFocus(); // Opcional: enfocar el campo para que el usuario lo corrija
+            return false; // Indica que la validación falló
+        }
+
+        return true; // Indica que la validación fue exitosa
+    }
+
+    public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
+        try {
+            int valor = Integer.parseInt(textField.getText());
+            if (valor > 0) {
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
 
     /**
      * Creates new form interfaz
      */
     public interfaz() {
         initComponents();
+
+        CreateFileButton.setEnabled(false);
+        ActualizarButton.setEnabled(false);
+        BorrarButton.setEnabled(false);
+        AdminButton.setEnabled(true);
+        UserButton.setEnabled(false);
 
         storageString = initStorage.printList();
         storageDevicePanel.setText(storageString);
@@ -429,11 +465,21 @@ public class interfaz extends javax.swing.JFrame {
         AdminButton.setBackground(new java.awt.Color(61, 150, 209));
         AdminButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         AdminButton.setText("MODO ADMINISTRADOR");
+        AdminButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AdminButtonActionPerformed(evt);
+            }
+        });
 
         UserButton.setBackground(new java.awt.Color(150, 150, 150));
         UserButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         UserButton.setForeground(new java.awt.Color(28, 28, 28));
         UserButton.setText("MODO USUARIO");
+        UserButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UserButtonActionPerformed(evt);
+            }
+        });
 
         GuardarConfigButton.setBackground(new java.awt.Color(38, 171, 75));
         GuardarConfigButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
@@ -509,6 +555,11 @@ public class interfaz extends javax.swing.JFrame {
 
     private void TipoArchivoSelect1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TipoArchivoSelect1ActionPerformed
         // TODO add your handling code here:
+        if (TipoArchivoSelect1.getSelectedItem().equals("Directorio")) {
+            CantidadBloquesTextField.setEnabled(false);
+        } else {
+            CantidadBloquesTextField.setEnabled(true);
+        }
     }//GEN-LAST:event_TipoArchivoSelect1ActionPerformed
 
     private void CreateFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFileButtonActionPerformed
@@ -517,35 +568,32 @@ public class interfaz extends javax.swing.JFrame {
         int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
         String nombre = NameArchivoTextField1.getText();
         String dirrectorio = DirectorySelect.getSelectedItem().toString();
-        
-        
 
         if (tipoArchivo == "Archivo") {
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             storageDevicePanel.setText(sd.imprimir());
+
+            if (dirrectorio != "Raiz") {
+
+              
             
-            
-            if(dirrectorio != "Raiz"){
-                
-                 /////--------> logica para meter un archivo en el directorio diferente a raiz 
+          /////--------> logica para meter un archivo en el directorio diferente a raiz 
     
             }else {
                     /////--------> logica para meter un archivo en el directorio raiz
             }
             
             
-        }else if(tipoArchivo == "Directorio"){   /////--------> logica para crear directorio 
+        }else if (tipoArchivo == "Directorio") {
+            /////--------> logica para crear directorio 
             
             
             
             Directory directorio = new Directory(nombre, raiz, initStorage);
-            
-        
-        
-        }
 
+        }
 
 
     }//GEN-LAST:event_CreateFileButtonActionPerformed
@@ -553,6 +601,24 @@ public class interfaz extends javax.swing.JFrame {
     private void DirectorySelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DirectorySelectActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_DirectorySelectActionPerformed
+
+    private void AdminButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdminButtonActionPerformed
+        // TODO add your handling code here:
+        CreateFileButton.setEnabled(true);
+        ActualizarButton.setEnabled(true);
+        BorrarButton.setEnabled(true);
+        AdminButton.setEnabled(false);
+        UserButton.setEnabled(true);
+    }//GEN-LAST:event_AdminButtonActionPerformed
+
+    private void UserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserButtonActionPerformed
+        // TODO add your handling code here:
+        CreateFileButton.setEnabled(false);
+        ActualizarButton.setEnabled(false);
+        BorrarButton.setEnabled(false);
+        AdminButton.setEnabled(true);
+        UserButton.setEnabled(false);
+    }//GEN-LAST:event_UserButtonActionPerformed
 
     /**
      * @param args the command line arguments
