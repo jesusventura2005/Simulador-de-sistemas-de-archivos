@@ -1,5 +1,7 @@
 package DataStructures;
 
+import simuladorarchivos.Directory;
+
 public class SimpleList {
 
     private Nodo pFirst;
@@ -37,6 +39,15 @@ public class SimpleList {
             actual = actual.getpNext();
         }
         return false;
+    }
+    
+    public void encontraDirectorio(String nombreDirectorio, Directory directory){
+        Nodo actual = pFirst;
+        while (actual.getInfo() != directory){
+        actual.getpNext();
+
+        }
+    
     }
 
     
@@ -133,7 +144,7 @@ public class SimpleList {
 
         return sb.toString(); // Retorna la cadena construida
     }
-    
+      
     
     
 

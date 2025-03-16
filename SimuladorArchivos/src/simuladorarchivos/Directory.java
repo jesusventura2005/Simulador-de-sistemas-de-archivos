@@ -11,8 +11,8 @@ public class Directory {
     private String name;
     private SimpleList files;
 
-    public Directory(String nombre, SimpleList archivos) {
-        this.name = name;
+    public Directory(String nombre) {
+        this.name = nombre;
         this.files = new SimpleList();
 
     }
@@ -22,6 +22,8 @@ public class Directory {
         files.insertLast(file);
 
     }
+    
+
 
     public String getName() {
         return name;
@@ -38,5 +40,9 @@ public class Directory {
     public void setFiles(SimpleList files) {
         this.files = files;
     }
+
+ 
+    
+    
 
 }

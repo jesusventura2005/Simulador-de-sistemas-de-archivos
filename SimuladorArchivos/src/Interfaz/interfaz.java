@@ -26,18 +26,35 @@ public class interfaz extends javax.swing.JFrame {
     int cantidadBloques = 25;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
-    Directory raiz = new Directory(storageString, initStorage);
-
+    Directory raiz = new Directory("Raiz");
+    SimpleList listaDirectorios = new SimpleList();
     DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raíz");
     DefaultTreeModel modelo = new DefaultTreeModel(raizNode);
-   
 
-//            private void agregarDirectorio(DefaultMutableTreeNode padre, String nombreDirectorio) {
-//            DefaultMutableTreeNode directorio = new DefaultMutableTreeNode(nombreDirectorio);
-//            listaNodos.insertLast(directorio);
-//            padre.add(directorio);
-//        }
-    /////--------> plantea esto bien directorio raiz /// 
+    private Directory buscarDirectorio(String nombre) {
+        for (int i = 0; i < listaDirectorios.getSize(); i++) {
+            Directory dir = (Directory) listaDirectorios.getValor(i);
+            if (dir.getName().equals(nombre)) {
+                return dir;
+            }
+        }
+        return null;
+    }
+
+    private DefaultMutableTreeNode buscarNodo(DefaultMutableTreeNode root, String nombre) {
+        if (root.getUserObject().toString().equals(nombre)) {
+            return root;
+        }
+
+        for (int i = 0; i < root.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
+            DefaultMutableTreeNode result = buscarNodo(child, nombre);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
 
     public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
         String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
@@ -72,7 +89,6 @@ public class interfaz extends javax.swing.JFrame {
      */
     public interfaz() {
         initComponents();
-
 
         CreateFileButton.setEnabled(false);
         ActualizarButton.setEnabled(false);
@@ -613,39 +629,46 @@ public class interfaz extends javax.swing.JFrame {
 
     private void CreateFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFileButtonActionPerformed
         // TODO add your handling code here:
-
         String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
         String nombre = NameArchivoTextField1.getText();
-        String dirrectorio = DirectorySelect.getSelectedItem().toString();
+        String directorioSeleccionado = DirectorySelect.getSelectedItem().toString();
 
-        if (tipoArchivo.equals("Archivo")) { // Use .equals() for string comparison
+        if (tipoArchivo.equals("Archivo")) {
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             storageDevicePanel.setText(sd.imprimir());
 
-            if (!dirrectorio.equals("Raiz")) { // Use .equals() and negate for clarity
-                // Logic for non-root directories (currently empty)
+            if (!directorioSeleccionado.equals("Raiz")) {
+                // Buscar el directorio padre
+                Directory padre = buscarDirectorio(directorioSeleccionado);
+                if (padre != null) {
+                    padre.agregar(file);
+                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre); // Actualizar JTree
+                }
             } else {
-                System.out.println(raizNode.getUserObject().toString());
                 agregarDirectorio(raizNode, nombre);
                 raiz.agregar(file);
-                raiz.getFiles().printListToConsole();
+                listaDirectorios.printListToConsole();
             }
 
-        } else if (tipoArchivo.equals("Directorio")) { // Use .equals() for string comparison
-            Directory directorio = new Directory(nombre, new SimpleList());
-            DirectorySelect.addItem(nombre);
+        } else if (tipoArchivo.equals("Directorio")) {
+            Directory directorio = new Directory(nombre);
+            DirectorySelect.addItem(directorio.getName());
+            listaDirectorios.insertLast(directorio);
 
-            if (!dirrectorio.equals("Raiz")) { // Use .equals() and negate for clarity
-                // Logic for non-root directories (currently empty)
+            if (!directorioSeleccionado.equals("Raiz")) {
+                Directory padre = buscarDirectorio(directorioSeleccionado);
+                if (padre != null) {
+                    padre.agregar(directorio);
+                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
+                }
             } else {
+                agregarDirectorio(raizNode, nombre);
                 raiz.agregar(directorio);
-                raiz.getFiles().printListToConsole();
             }
         }
-
 
     }//GEN-LAST:event_CreateFileButtonActionPerformed
 
