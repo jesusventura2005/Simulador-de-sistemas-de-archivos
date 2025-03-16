@@ -5,7 +5,7 @@
 package Interfaz;
 
 import DataStructures.SimpleList;
-import javax.swing.JFrame;
+import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -28,84 +28,73 @@ public class interfaz extends javax.swing.JFrame {
     SimpleList initStorage = sd.getBloques();
     Directory raiz = new Directory(storageString, initStorage);
 
-    DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raiz");
+    DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raíz");
+    DefaultTreeModel modelo = new DefaultTreeModel(raizNode);
+   
 
-    public class ArbolDirectorios extends JFrame {
-
-        public ArbolDirectorios() {
-            // Crear el nodo raíz como un directorio
-            DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Raíz");
-
-
-            DefaultTreeModel modelo = new DefaultTreeModel(raiz);
-            JTree arbol = new JTree(modelo);
-            JScrollPane scrollPane = new JScrollPane(arbol);
-
-            this.add(scrollPane);
-            this.setSize(300, 200);
-            this.setVisible(true);
-            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        }
-
-        private void agregarDirectorio(DefaultMutableTreeNode padre, String nombreDirectorio) {
-            DefaultMutableTreeNode directorio = new DefaultMutableTreeNode(nombreDirectorio);
-            padre.add(directorio);
-        }
-    
-    }
-
-        /////--------> plantea esto bien directorio raiz /// 
+//            private void agregarDirectorio(DefaultMutableTreeNode padre, String nombreDirectorio) {
+//            DefaultMutableTreeNode directorio = new DefaultMutableTreeNode(nombreDirectorio);
+//            listaNodos.insertLast(directorio);
+//            padre.add(directorio);
+//        }
+    /////--------> plantea esto bien directorio raiz /// 
 
     public static boolean validarCampoStringNoVacio(JTextField textField, String nombreCampo) {
-            String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
+        String texto = textField.getText().trim(); // Obtener el texto y eliminar espacios en blanco al inicio y al final
 
-            if (texto.isEmpty()) {
-                // Mostrar un mensaje de error o realizar alguna acción (p. ej., cambiar el foco)
-                javax.swing.JOptionPane.showMessageDialog(null, "El campo '" + nombreCampo + "' no puede estar vacío.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                textField.requestFocus(); // Opcional: enfocar el campo para que el usuario lo corrija
-                return false; // Indica que la validación falló
-            }
-
-            return true; // Indica que la validación fue exitosa
+        if (texto.isEmpty()) {
+            // Mostrar un mensaje de error o realizar alguna acción (p. ej., cambiar el foco)
+            javax.swing.JOptionPane.showMessageDialog(null, "El campo '" + nombreCampo + "' no puede estar vacío.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            textField.requestFocus(); // Opcional: enfocar el campo para que el usuario lo corrija
+            return false; // Indica que la validación falló
         }
 
-        public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
-            try {
-                int valor = Integer.parseInt(textField.getText());
-                if (valor > 0) {
-                    return true;
-                } else {
-                    JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
+        return true; // Indica que la validación fue exitosa
+    }
+
+    public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
+        try {
+            int valor = Integer.parseInt(textField.getText());
+            if (valor > 0) {
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+    }
 
-        /**
-         * Creates new form interfaz
-         */
-        public interfaz() {
-            initComponents();
-            new ArbolDirectorios();
-            CreateFileButton.setEnabled(false);
-            ActualizarButton.setEnabled(false);
-            BorrarButton.setEnabled(false);
-            AdminButton.setEnabled(true);
-            UserButton.setEnabled(false);
+    /**
+     * Creates new form interfaz
+     */
+    public interfaz() {
+        initComponents();
 
-            storageString = initStorage.printList();
-            storageDevicePanel.setText(storageString);
-        }
 
-        /**
-         * This method is called from within the constructor to initialize the
-         * form. WARNING: Do NOT modify this code. The content of this method is
-         * always regenerated by the Form Editor.
-         */
-        @SuppressWarnings("unchecked")
+        CreateFileButton.setEnabled(false);
+        ActualizarButton.setEnabled(false);
+        BorrarButton.setEnabled(false);
+        AdminButton.setEnabled(true);
+        UserButton.setEnabled(false);
+
+        storageString = initStorage.printList();
+        storageDevicePanel.setText(storageString);
+    }
+
+    private void agregarDirectorio(DefaultMutableTreeNode padre, String nombreDirectorio) {
+        DefaultMutableTreeNode directorio = new DefaultMutableTreeNode(nombreDirectorio);
+        modelo.insertNodeInto(directorio, padre, padre.getChildCount()); // Notificar al modelo
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -116,6 +105,8 @@ public class interfaz extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         storageDevicePanel = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
         jSeparator2 = new javax.swing.JSeparator();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -175,6 +166,9 @@ public class interfaz extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel2.setText("storage device");
 
+        jTree1.setModel(modelo);
+        jScrollPane3.setViewportView(jTree1);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -182,12 +176,15 @@ public class interfaz extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(127, 127, 127)
+                        .addComponent(jLabel2))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(84, 84, 84)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(127, 127, 127)
-                        .addComponent(jLabel2)))
-                .addContainerGap(97, Short.MAX_VALUE))
+                        .addGap(52, 52, 52)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(65, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,6 +193,8 @@ public class interfaz extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -614,42 +613,46 @@ public class interfaz extends javax.swing.JFrame {
 
     private void CreateFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFileButtonActionPerformed
         // TODO add your handling code here:
+
         String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
         String nombre = NameArchivoTextField1.getText();
         String dirrectorio = DirectorySelect.getSelectedItem().toString();
 
-        if (tipoArchivo == "Archivo") {
+        if (tipoArchivo.equals("Archivo")) { // Use .equals() for string comparison
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             storageDevicePanel.setText(sd.imprimir());
 
-            if (dirrectorio != "Raiz") {
-
+            if (!dirrectorio.equals("Raiz")) { // Use .equals() and negate for clarity
+                // Logic for non-root directories (currently empty)
             } else {
+                System.out.println(raizNode.getUserObject().toString());
+                agregarDirectorio(raizNode, nombre);
                 raiz.agregar(file);
                 raiz.getFiles().printListToConsole();
-
             }
 
-        } else if (tipoArchivo == "Directorio") {
-
+        } else if (tipoArchivo.equals("Directorio")) { // Use .equals() for string comparison
             Directory directorio = new Directory(nombre, new SimpleList());
             DirectorySelect.addItem(nombre);
 
-            if (dirrectorio != "Raiz") {
-
+            if (!dirrectorio.equals("Raiz")) { // Use .equals() and negate for clarity
+                // Logic for non-root directories (currently empty)
             } else {
-
                 raiz.agregar(directorio);
                 raiz.getFiles().printListToConsole();
             }
         }
+
+
     }//GEN-LAST:event_CreateFileButtonActionPerformed
 
     private void DirectorySelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DirectorySelectActionPerformed
         // TODO add your handling code here:
+
+
     }//GEN-LAST:event_DirectorySelectActionPerformed
 
     private void AdminButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdminButtonActionPerformed
@@ -670,41 +673,41 @@ public class interfaz extends javax.swing.JFrame {
         UserButton.setEnabled(false);
     }//GEN-LAST:event_UserButtonActionPerformed
 
-        /**
-         * @param args the command line arguments
-         */
-        public static void main(String args[]) {
-            /* Set the Nimbus look and feel */
-            //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-            /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-             */
-            try {
-                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                    if ("Nimbus".equals(info.getName())) {
-                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                        break;
-                    }
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
                 }
-            } catch (ClassNotFoundException ex) {
-                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-                java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-            //</editor-fold>
-
-            /* Create and display the form */
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    new interfaz().setVisible(true);
-
-                }
-            });
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new interfaz().setVisible(true);
+
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ActualizarButton;
@@ -740,6 +743,7 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator10;
     private javax.swing.JSeparator jSeparator11;
@@ -749,6 +753,7 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
+    private javax.swing.JTree jTree1;
     private javax.swing.JTextArea storageDevicePanel;
     // End of variables declaration//GEN-END:variables
 }
