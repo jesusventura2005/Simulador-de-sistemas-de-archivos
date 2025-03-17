@@ -24,10 +24,45 @@ public class interfaz extends javax.swing.JFrame {
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
     Directory raiz = new Directory("Raiz");
-    
+
     SimpleList listaDirectorios = new SimpleList();
     DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raíz");
     DefaultTreeModel modelo = new DefaultTreeModel(raizNode);
+
+    private void actualizarNombreArchivo(Directory root, String nombreActual, String nuevoNombre) {
+        if (root != null) {
+            if (root.getName().equals(nombreActual)) {
+                root.setName(nuevoNombre);
+                return;
+            }
+
+            for (int i = 0; i < root.getFiles().getSize(); i++) {
+                Object obj = root.getFiles().getValor(i); // Usar getValor de SimpleList
+                if (obj instanceof Files) {
+                    Files file = (Files) obj;
+                    if (file.getNombre().equals(nombreActual)) {
+                        file.setNombre(nuevoNombre);
+                        return;
+                    }
+                } else if (obj instanceof Directory) {
+                    actualizarNombreArchivo((Directory) obj, nombreActual, nuevoNombre); // Recursión
+                }
+            }
+        }
+    }
+
+    private void actualizarJTree(DefaultMutableTreeNode root, String nombreActual, String nuevoNombre) {
+        if (root.getUserObject().toString().equals(nombreActual)) {
+            root.setUserObject(nuevoNombre);
+            modelo.reload(root); // Notificar al modelo del cambio
+            return;
+        }
+
+        for (int i = 0; i < root.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
+            actualizarJTree(child, nombreActual, nuevoNombre);
+        }
+    }
 
     private Directory buscarDirectorio(String nombre) {
         for (int i = 0; i < listaDirectorios.getSize(); i++) {
@@ -79,6 +114,130 @@ public class interfaz extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero", "ERROR", JOptionPane.ERROR_MESSAGE);
             return false;
+        }
+    }
+
+    private void crearArchivo(String nombre, String directorioSeleccionado) {
+        if (validarCampoEntero(CantidadBloquesTextField, "Cantidad de Bloques del Archivo")
+                && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
+
+            int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
+            Files file = new Files(nombre, numeroBloques);
+            file.agregarBloques(numeroBloques);
+            sd.asignarBloques(file.getTamañoBloques(), nombre);
+            storageDevicePanel.setText(sd.imprimir());
+
+            if (!directorioSeleccionado.equals("Raiz")) {
+                Directory padre = buscarDirectorio(directorioSeleccionado);
+                if (padre != null) {
+                    padre.agregar(file);
+                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
+                }
+            } else {
+                agregarDirectorio(raizNode, nombre);
+                raiz.agregar(file);
+                listaDirectorios.printListToConsole();
+            }
+        }
+    }
+
+    private void crearDirectorio(String nombre, String directorioSeleccionado) {
+        if (validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
+            Directory directorio = new Directory(nombre);
+            DirectorySelect.addItem(directorio.getName());
+            listaDirectorios.insertLast(directorio);
+
+            if (!directorioSeleccionado.equals("Raiz")) {
+                Directory padre = buscarDirectorio(directorioSeleccionado);
+                if (padre != null) {
+                    padre.agregar(directorio);
+                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
+                }
+            } else {
+                agregarDirectorio(raizNode, nombre);
+                raiz.agregar(directorio);
+            }
+        }
+    }
+
+    private void actualizarComboBox(String nombreActual, String nuevoNombre) {
+        for (int i = 0; i < ArchivoActualizarSelect1.getItemCount(); i++) {
+            if (ArchivoActualizarSelect1.getItemAt(i).equals(nombreActual)) {
+                ArchivoActualizarSelect1.removeItemAt(i);
+                ArchivoActualizarSelect1.insertItemAt(nuevoNombre, i);
+                ArchivoActualizarSelect.setSelectedItem(nuevoNombre);
+                break;
+            }
+        }
+        for (int i = 0; i < ArchivoActualizarSelect.getItemCount(); i++) {
+            if (ArchivoActualizarSelect.getItemAt(i).equals(nombreActual)) {
+                ArchivoActualizarSelect.removeItemAt(i);
+                ArchivoActualizarSelect.insertItemAt(nuevoNombre, i);
+                break;
+            }
+        }
+    }
+
+    private void eliminarNodo(Directory root, String nombreAEliminar) {
+        for (int i = 0; i < root.getFiles().getSize(); i++) {
+            Object obj = root.getFiles().getValor(i);
+            if (obj instanceof Files) {
+                Files file = (Files) obj;
+                if (file.getNombre().equals(nombreAEliminar)) {
+                    sd.removerArchivo(nombreAEliminar);
+                    root.getFiles().remove(file);
+                    return;
+                }
+            } else if (obj instanceof Directory) {
+                Directory dir = (Directory) obj;
+                if (dir.getName().equals(nombreAEliminar)) {
+                    eliminarDirectorioRecursivamente(dir);
+                    root.getFiles().remove(dir);
+                    return;
+                } else {
+                    eliminarNodo(dir, nombreAEliminar); // Recursión para subdirectorios
+                }
+            }
+        }
+    }
+
+    private void eliminarDirectorioRecursivamente(Directory dir) {
+        for (int i = 0; i < dir.getFiles().getSize(); i++) {
+            Object obj = dir.getFiles().getValor(i);
+            if (obj instanceof Files) {
+                Files file = (Files) obj;
+                sd.removerArchivo(file.getNombre());
+            } else if (obj instanceof Directory) {
+                eliminarDirectorioRecursivamente((Directory) obj); // Recursión
+            }
+        }
+        listaDirectorios.remove(dir);
+    }
+
+    private void eliminarNodoJTree(DefaultMutableTreeNode root, String nombreAEliminar) {
+        for (int i = 0; i < root.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
+            if (child.getUserObject().toString().equals(nombreAEliminar)) {
+                modelo.removeNodeFromParent(child);
+                return;
+            } else {
+                eliminarNodoJTree(child, nombreAEliminar); // Recursión
+            }
+        }
+    }
+
+    private void eliminarNodoComboBox(String nombreAEliminar) {
+        for (int i = 0; i < ArchivoActualizarSelect1.getItemCount(); i++) {
+            if (ArchivoActualizarSelect1.getItemAt(i).equals(nombreAEliminar)) {
+                ArchivoActualizarSelect1.removeItemAt(i);
+                break;
+            }
+        }
+        for (int i = 0; i < ArchivoActualizarSelect.getItemCount(); i++) {
+            if (ArchivoActualizarSelect.getItemAt(i).equals(nombreAEliminar)) {
+                ArchivoActualizarSelect.removeItemAt(i);
+                break;
+            }
         }
     }
 
@@ -600,7 +759,21 @@ public class interfaz extends javax.swing.JFrame {
     private void ActualizarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActualizarButtonActionPerformed
         // TODO add your handling code here:
         if (validarCampoStringNoVacio(NameArchivoActualizarTextField, "Nombre del archivo nuevo")) {
-            
+            String nuevoNombre = NameArchivoActualizarTextField.getText();
+            String nombreActual = ArchivoActualizarSelect1.getSelectedItem().toString();
+
+            // Actualizar el nombre en la estructura de datos
+            actualizarNombreArchivo(raiz, nombreActual, nuevoNombre);
+
+            // Actualizar el JTree
+            actualizarJTree(raizNode, nombreActual, nuevoNombre);
+
+            // Actualizar el StorageDevice
+            sd.actualizarNombreArchivoEnBloques(nombreActual, nuevoNombre);
+            storageDevicePanel.setText(sd.imprimir());
+
+            // Actualizar el JComboBox
+            actualizarComboBox(nombreActual, nuevoNombre);
         }
     }//GEN-LAST:event_ActualizarButtonActionPerformed
 
@@ -622,47 +795,17 @@ public class interfaz extends javax.swing.JFrame {
         String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
         String nombre = NameArchivoTextField1.getText();
         String directorioSeleccionado = DirectorySelect.getSelectedItem().toString();
+
         ArchivoActualizarSelect1.addItem(nombre);
         ArchivoActualizarSelect.addItem(nombre);
 
-        if (tipoArchivo.equals("Archivo")) {
-            if (validarCampoEntero(CantidadBloquesTextField, "Cantidad de Bloques del Archivo") && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
-                int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
-                Files file = new Files(nombre, numeroBloques);
-                file.agregarBloques(numeroBloques);
-                sd.asignarBloques(file.getTamañoBloques(), nombre);
-                storageDevicePanel.setText(sd.imprimir());
-
-                if (!directorioSeleccionado.equals("Raiz")) {
-                    // Buscar el directorio padre
-                    Directory padre = buscarDirectorio(directorioSeleccionado);
-                    if (padre != null) {
-                        padre.agregar(file);
-                        agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre); // Actualizar JTree
-                    }
-                } else {
-                    agregarDirectorio(raizNode, nombre);
-                    raiz.agregar(file);
-                    listaDirectorios.printListToConsole();
-                }
-            }
-        } else if (tipoArchivo.equals("Directorio")) {
-            if (validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
-                Directory directorio = new Directory(nombre);
-                DirectorySelect.addItem(directorio.getName());
-                listaDirectorios.insertLast(directorio);
-
-                if (!directorioSeleccionado.equals("Raiz")) {
-                    Directory padre = buscarDirectorio(directorioSeleccionado);
-                    if (padre != null) {
-                        padre.agregar(directorio);
-                        agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
-                    }
-                } else {
-                    agregarDirectorio(raizNode, nombre);
-                    raiz.agregar(directorio);
-                }
-            }
+        switch (tipoArchivo) {
+            case "Archivo":
+                crearArchivo(nombre, directorioSeleccionado);
+                break;
+            case "Directorio":
+                crearDirectorio(nombre, directorioSeleccionado);
+                break;
 
         }
 
@@ -706,6 +849,15 @@ public class interfaz extends javax.swing.JFrame {
 
     private void BorrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BorrarButtonActionPerformed
         // TODO add your handling code here:
+
+        String nombreAEliminar = ArchivoActualizarSelect1.getSelectedItem().toString();
+
+        if (nombreAEliminar != null && !nombreAEliminar.isEmpty()) {
+            eliminarNodo(raiz, nombreAEliminar);
+            eliminarNodoJTree(raizNode, nombreAEliminar);
+            eliminarNodoComboBox(nombreAEliminar);
+            storageDevicePanel.setText(sd.imprimir()); // Actualizar el StorageDevice
+        }
     }//GEN-LAST:event_BorrarButtonActionPerformed
 
     /**

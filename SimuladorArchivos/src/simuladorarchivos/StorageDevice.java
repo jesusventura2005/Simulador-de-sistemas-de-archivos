@@ -92,6 +92,17 @@ public void removerArchivo(String nombreArchivo) {
         }
     }
 }
+
+
+    public void actualizarNombreArchivoEnBloques(String nombreActual, String nuevoNombre) {
+        for (int i = 0; i < bloques.getSize(); i++) {
+            String bloque = (String) bloques.getValor(i);
+            if (bloque.startsWith(nombreActual + " ")) { // Verifica si el bloque pertenece al archivo
+                String nuevoBloque = bloque.replaceFirst(nombreActual, nuevoNombre);
+                bloques.replaceBLock(nuevoBloque, i);
+            }
+        }
+    }
     
 
     
