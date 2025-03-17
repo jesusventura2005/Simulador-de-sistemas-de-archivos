@@ -139,8 +139,6 @@ public class interfaz extends javax.swing.JFrame {
         ArchivoActualizarSelect = new javax.swing.JComboBox<>();
         CreateFileButton = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
-        CreateButton3 = new javax.swing.JButton();
-        jSeparator10 = new javax.swing.JSeparator();
         jLabel11 = new javax.swing.JLabel();
         TipoArchivoSelect1 = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
@@ -158,7 +156,6 @@ public class interfaz extends javax.swing.JFrame {
         AdminButton = new javax.swing.JButton();
         UserButton = new javax.swing.JButton();
         GuardarConfigButton = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -278,8 +275,20 @@ public class interfaz extends javax.swing.JFrame {
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("Nombre del archivo / directorio");
 
+        NameArchivoActualizarTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NameArchivoActualizarTextFieldActionPerformed(evt);
+            }
+        });
+
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("Cantidad de bloques asignados");
+
+        CantidadBloquesTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CantidadBloquesTextFieldActionPerformed(evt);
+            }
+        });
 
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Tipo de archivo");
@@ -294,11 +303,6 @@ public class interfaz extends javax.swing.JFrame {
             }
         });
 
-        CreateButton3.setBackground(new java.awt.Color(255, 208, 79));
-        CreateButton3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        CreateButton3.setForeground(new java.awt.Color(0, 0, 0));
-        CreateButton3.setText("VER SISTEMAS DE ARCHIVOS");
-
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("BORRAR");
@@ -312,6 +316,12 @@ public class interfaz extends javax.swing.JFrame {
 
         jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Nombre del archivo / directorio");
+
+        NameArchivoTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NameArchivoTextField1ActionPerformed(evt);
+            }
+        });
 
         ActualizarButton.setBackground(new java.awt.Color(0, 139, 252));
         ActualizarButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -337,6 +347,11 @@ public class interfaz extends javax.swing.JFrame {
         BorrarButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         BorrarButton.setForeground(new java.awt.Color(0, 0, 0));
         BorrarButton.setText("BORRAR ARCHIVO/DIRECTORIO");
+        BorrarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BorrarButtonActionPerformed(evt);
+            }
+        });
 
         jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setText("Directorio");
@@ -391,9 +406,7 @@ public class interfaz extends javax.swing.JFrame {
                         .addComponent(DirectorySelect, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator10, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(NameArchivoTextField1))
+                        .addComponent(NameArchivoTextField1)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGap(0, 51, Short.MAX_VALUE)
@@ -401,9 +414,6 @@ public class interfaz extends javax.swing.JFrame {
                         .addGap(59, 59, 59))))
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(53, 53, 53)
-                        .addComponent(CreateButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(133, 133, 133)
                         .addComponent(jLabel11))
@@ -413,7 +423,7 @@ public class interfaz extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(114, 114, 114)
                         .addComponent(jLabel13)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 119, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -469,11 +479,7 @@ public class interfaz extends javax.swing.JFrame {
                 .addComponent(ArchivoActualizarSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(BorrarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator10, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
-                .addComponent(CreateButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(58, 58, 58))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -534,17 +540,6 @@ public class interfaz extends javax.swing.JFrame {
         GuardarConfigButton.setForeground(new java.awt.Color(28, 28, 28));
         GuardarConfigButton.setText("GUARDAR CONFIGURACION");
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 271, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 348, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -564,13 +559,9 @@ public class interfaz extends javax.swing.JFrame {
                         .addComponent(UserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(GuardarConfigButton)
-                        .addGap(0, 189, Short.MAX_VALUE))
+                        .addGap(0, 226, Short.MAX_VALUE))
                     .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(103, 103, 103)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addGap(0, 42, Short.MAX_VALUE)
@@ -579,7 +570,7 @@ public class interfaz extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(7, Short.MAX_VALUE)
+                .addContainerGap(9, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator3)
@@ -589,9 +580,7 @@ public class interfaz extends javax.swing.JFrame {
                     .addComponent(GuardarConfigButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(292, 292, 292)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(80, 80, 80))
+                .addGap(720, 720, 720))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap(43, Short.MAX_VALUE)
@@ -612,6 +601,9 @@ public class interfaz extends javax.swing.JFrame {
 
     private void ActualizarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActualizarButtonActionPerformed
         // TODO add your handling code here:
+        if (validarCampoStringNoVacio(NameArchivoActualizarTextField, "Nombre del archivo nuevo")) {
+            
+        }
     }//GEN-LAST:event_ActualizarButtonActionPerformed
 
     private void ArchivoActualizarSelect1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArchivoActualizarSelect1ActionPerformed
@@ -634,40 +626,44 @@ public class interfaz extends javax.swing.JFrame {
         String directorioSeleccionado = DirectorySelect.getSelectedItem().toString();
 
         if (tipoArchivo.equals("Archivo")) {
-            int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
-            Files file = new Files(nombre, numeroBloques);
-            file.agregarBloques(numeroBloques);
-            sd.asignarBloques(file.getTamañoBloques(), nombre);
-            storageDevicePanel.setText(sd.imprimir());
+            if (validarCampoEntero(CantidadBloquesTextField, "Cantidad de Bloques del Archivo") && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
+                int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
+                Files file = new Files(nombre, numeroBloques);
+                file.agregarBloques(numeroBloques);
+                sd.asignarBloques(file.getTamañoBloques(), nombre);
+                storageDevicePanel.setText(sd.imprimir());
 
-            if (!directorioSeleccionado.equals("Raiz")) {
-                // Buscar el directorio padre
-                Directory padre = buscarDirectorio(directorioSeleccionado);
-                if (padre != null) {
-                    padre.agregar(file);
-                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre); // Actualizar JTree
+                if (!directorioSeleccionado.equals("Raiz")) {
+                    // Buscar el directorio padre
+                    Directory padre = buscarDirectorio(directorioSeleccionado);
+                    if (padre != null) {
+                        padre.agregar(file);
+                        agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre); // Actualizar JTree
+                    }
+                } else {
+                    agregarDirectorio(raizNode, nombre);
+                    raiz.agregar(file);
+                    listaDirectorios.printListToConsole();
                 }
-            } else {
-                agregarDirectorio(raizNode, nombre);
-                raiz.agregar(file);
-                listaDirectorios.printListToConsole();
             }
-
         } else if (tipoArchivo.equals("Directorio")) {
-            Directory directorio = new Directory(nombre);
-            DirectorySelect.addItem(directorio.getName());
-            listaDirectorios.insertLast(directorio);
+            if (validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
+                Directory directorio = new Directory(nombre);
+                DirectorySelect.addItem(directorio.getName());
+                listaDirectorios.insertLast(directorio);
 
-            if (!directorioSeleccionado.equals("Raiz")) {
-                Directory padre = buscarDirectorio(directorioSeleccionado);
-                if (padre != null) {
-                    padre.agregar(directorio);
-                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
+                if (!directorioSeleccionado.equals("Raiz")) {
+                    Directory padre = buscarDirectorio(directorioSeleccionado);
+                    if (padre != null) {
+                        padre.agregar(directorio);
+                        agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
+                    }
+                } else {
+                    agregarDirectorio(raizNode, nombre);
+                    raiz.agregar(directorio);
                 }
-            } else {
-                agregarDirectorio(raizNode, nombre);
-                raiz.agregar(directorio);
             }
+
         }
 
     }//GEN-LAST:event_CreateFileButtonActionPerformed
@@ -695,6 +691,22 @@ public class interfaz extends javax.swing.JFrame {
         AdminButton.setEnabled(true);
         UserButton.setEnabled(false);
     }//GEN-LAST:event_UserButtonActionPerformed
+
+    private void CantidadBloquesTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CantidadBloquesTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CantidadBloquesTextFieldActionPerformed
+
+    private void NameArchivoTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NameArchivoTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NameArchivoTextField1ActionPerformed
+
+    private void NameArchivoActualizarTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NameArchivoActualizarTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NameArchivoActualizarTextFieldActionPerformed
+
+    private void BorrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BorrarButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BorrarButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -740,7 +752,6 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JButton BorrarButton;
     private javax.swing.JTextField CantidadBloquesTextField;
     private javax.swing.JButton CargarButton;
-    private javax.swing.JButton CreateButton3;
     private javax.swing.JButton CreateFileButton;
     private javax.swing.JComboBox<String> DirectorySelect;
     private javax.swing.JButton GuardarConfigButton;
@@ -762,13 +773,11 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator10;
     private javax.swing.JSeparator jSeparator11;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
