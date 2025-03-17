@@ -5,11 +5,8 @@
 package Interfaz;
 
 import DataStructures.SimpleList;
-import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import simuladorarchivos.Directory;
@@ -23,10 +20,11 @@ import simuladorarchivos.StorageDevice;
 public class interfaz extends javax.swing.JFrame {
 
     String storageString;
-    int cantidadBloques = 25;
+    int cantidadBloques = 50;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
     Directory raiz = new Directory("Raiz");
+    
     SimpleList listaDirectorios = new SimpleList();
     DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raíz");
     DefaultTreeModel modelo = new DefaultTreeModel(raizNode);
@@ -624,6 +622,8 @@ public class interfaz extends javax.swing.JFrame {
         String tipoArchivo = TipoArchivoSelect1.getSelectedItem().toString();
         String nombre = NameArchivoTextField1.getText();
         String directorioSeleccionado = DirectorySelect.getSelectedItem().toString();
+        ArchivoActualizarSelect1.addItem(nombre);
+        ArchivoActualizarSelect.addItem(nombre);
 
         if (tipoArchivo.equals("Archivo")) {
             if (validarCampoEntero(CantidadBloquesTextField, "Cantidad de Bloques del Archivo") && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
