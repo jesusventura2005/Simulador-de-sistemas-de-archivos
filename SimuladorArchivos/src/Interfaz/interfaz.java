@@ -7,6 +7,7 @@ package Interfaz;
 import DataStructures.SimpleList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import simuladorarchivos.Directory;
@@ -21,6 +22,8 @@ public class interfaz extends javax.swing.JFrame {
 
     String storageString;
     int cantidadBloques = 50;
+    public int cantidadBloquesDisponibles = cantidadBloques;
+    public DefaultTableModel modeloTablaAsignacion;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
     Directory raiz = new Directory("Raiz");
@@ -102,13 +105,17 @@ public class interfaz extends javax.swing.JFrame {
         return true; // Indica que la validación fue exitosa
     }
 
-    public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
+    public boolean validarCampoEnteroYBloques(JTextField textField, String nombreCampo) {
         try {
-            int valor = Integer.parseInt(textField.getText());
-            if (valor > 0) {
+            int bloquesAsignados = Integer.parseInt(textField.getText());
+
+            if (bloquesAsignados > 0 && bloquesAsignados <= cantidadBloquesDisponibles) {
                 return true;
-            } else {
+            } else if (bloquesAsignados <= 0) {
                 JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else {
+                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " no puede ser mayor que " + cantidadBloquesDisponibles, "ERROR", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } catch (NumberFormatException ex) {
@@ -118,14 +125,18 @@ public class interfaz extends javax.swing.JFrame {
     }
 
     private void crearArchivo(String nombre, String directorioSeleccionado) {
-        if (validarCampoEntero(CantidadBloquesTextField, "Cantidad de Bloques del Archivo")
+        if (validarCampoEnteroYBloques(CantidadBloquesTextField, "Cantidad de Bloques del Archivo")
                 && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
 
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
+
             sd.asignarBloques(file.getTamañoBloques(), nombre);
+            cantidadBloquesDisponibles = cantidadBloquesDisponibles - numeroBloques;
             storageDevicePanel.setText(sd.imprimir());
+            bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
+            añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), 0);
 
             if (!directorioSeleccionado.equals("Raiz")) {
                 Directory padre = buscarDirectorio(directorioSeleccionado);
@@ -137,6 +148,41 @@ public class interfaz extends javax.swing.JFrame {
                 agregarDirectorio(raizNode, nombre);
                 raiz.agregar(file);
                 listaDirectorios.printListToConsole();
+            }
+        }
+    }
+
+    private void añadirTablaAsignacion(DefaultTableModel modeloTabla, String nombreArchivo, int bloquesArchivo, int bloqueInicial) {
+        Object[] nuevaFila = new Object[]{
+            nombreArchivo,
+            bloquesArchivo,
+            bloqueInicial
+        };
+        modeloTabla.addRow(nuevaFila);
+    }
+
+    private void actualizarTablaAsignacion(DefaultTableModel modeloTabla, String nombreArchivo, String nuevoNombreArchivo) {
+        for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
+            String nombreArchivoActual = modeloTabla.getValueAt(i, 0).toString();
+
+            // Compara el nombre de archivo actual con el nombre de archivo que se va a actualizar.
+            if (nombreArchivoActual.equals(nombreArchivo)) {
+                // Se encontró la fila. Actualiza el nombre del archivo en la primera columna.
+                modeloTabla.setValueAt(nuevoNombreArchivo, i, 0);
+                break;
+            }
+        }
+    }
+
+    private void borrarTablaAsignacion(DefaultTableModel modeloTabla, String nombreArchivo) {
+        for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
+            String nombreArchivoActual = modeloTabla.getValueAt(i, 0).toString();
+
+            // Compara el ID del proceso actual con el ID del proceso que se va a eliminar.
+            if (nombreArchivoActual.equals(nombreArchivo)) {
+                // Se encontró el proceso. Elimina la fila correspondiente de la tabla.
+                modeloTabla.removeRow(i);
+                break; // Importante: Salir del bucle después de eliminar la fila.
             }
         }
     }
@@ -161,18 +207,18 @@ public class interfaz extends javax.swing.JFrame {
     }
 
     private void actualizarComboBox(String nombreActual, String nuevoNombre) {
-        for (int i = 0; i < ArchivoActualizarSelect1.getItemCount(); i++) {
-            if (ArchivoActualizarSelect1.getItemAt(i).equals(nombreActual)) {
-                ArchivoActualizarSelect1.removeItemAt(i);
-                ArchivoActualizarSelect1.insertItemAt(nuevoNombre, i);
-                ArchivoActualizarSelect.setSelectedItem(nuevoNombre);
-                break;
-            }
-        }
         for (int i = 0; i < ArchivoActualizarSelect.getItemCount(); i++) {
             if (ArchivoActualizarSelect.getItemAt(i).equals(nombreActual)) {
                 ArchivoActualizarSelect.removeItemAt(i);
                 ArchivoActualizarSelect.insertItemAt(nuevoNombre, i);
+                ArchivoABorrarSelect.setSelectedItem(nuevoNombre);
+                break;
+            }
+        }
+        for (int i = 0; i < ArchivoABorrarSelect.getItemCount(); i++) {
+            if (ArchivoABorrarSelect.getItemAt(i).equals(nombreActual)) {
+                ArchivoABorrarSelect.removeItemAt(i);
+                ArchivoABorrarSelect.insertItemAt(nuevoNombre, i);
                 break;
             }
         }
@@ -227,15 +273,15 @@ public class interfaz extends javax.swing.JFrame {
     }
 
     private void eliminarNodoComboBox(String nombreAEliminar) {
-        for (int i = 0; i < ArchivoActualizarSelect1.getItemCount(); i++) {
-            if (ArchivoActualizarSelect1.getItemAt(i).equals(nombreAEliminar)) {
-                ArchivoActualizarSelect1.removeItemAt(i);
-                break;
-            }
-        }
         for (int i = 0; i < ArchivoActualizarSelect.getItemCount(); i++) {
             if (ArchivoActualizarSelect.getItemAt(i).equals(nombreAEliminar)) {
                 ArchivoActualizarSelect.removeItemAt(i);
+                break;
+            }
+        }
+        for (int i = 0; i < ArchivoABorrarSelect.getItemCount(); i++) {
+            if (ArchivoABorrarSelect.getItemAt(i).equals(nombreAEliminar)) {
+                ArchivoABorrarSelect.removeItemAt(i);
                 break;
             }
         }
@@ -247,6 +293,8 @@ public class interfaz extends javax.swing.JFrame {
     public interfaz() {
         initComponents();
 
+        modeloTablaAsignacion = (DefaultTableModel) TablaAsignacion.getModel();
+
         CreateFileButton.setEnabled(false);
         ActualizarButton.setEnabled(false);
         BorrarButton.setEnabled(false);
@@ -255,6 +303,7 @@ public class interfaz extends javax.swing.JFrame {
 
         storageString = initStorage.printList();
         storageDevicePanel.setText(storageString);
+        bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
     }
 
     private void agregarDirectorio(DefaultMutableTreeNode padre, String nombreDirectorio) {
@@ -277,9 +326,10 @@ public class interfaz extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         storageDevicePanel = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
+        bloquesDisponiblesText = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
+        jLabel3 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -293,7 +343,7 @@ public class interfaz extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         CantidadBloquesTextField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        ArchivoActualizarSelect = new javax.swing.JComboBox<>();
+        ArchivoABorrarSelect = new javax.swing.JComboBox<>();
         CreateFileButton = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
         jLabel11 = new javax.swing.JLabel();
@@ -302,7 +352,7 @@ public class interfaz extends javax.swing.JFrame {
         NameArchivoTextField1 = new javax.swing.JTextField();
         ActualizarButton = new javax.swing.JButton();
         jSeparator11 = new javax.swing.JSeparator();
-        ArchivoActualizarSelect1 = new javax.swing.JComboBox<>();
+        ArchivoActualizarSelect = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         BorrarButton = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
@@ -333,39 +383,44 @@ public class interfaz extends javax.swing.JFrame {
         storageDevicePanel.setRows(5);
         jScrollPane2.setViewportView(storageDevicePanel);
 
-        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
-        jLabel2.setText("storage device");
+        bloquesDisponiblesText.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        bloquesDisponiblesText.setForeground(new java.awt.Color(0, 0, 0));
+        bloquesDisponiblesText.setText("0");
 
         jTree1.setModel(modelo);
         jScrollPane3.setViewportView(jTree1);
+
+        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("Storage Device");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(127, 127, 127)
-                        .addComponent(jLabel2))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(84, 84, 84)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addGap(32, 32, 32)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bloquesDisponiblesText)))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(jLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bloquesDisponiblesText)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
         );
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
@@ -378,14 +433,14 @@ public class interfaz extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Bloques", "Direccion 1er Bloque", "Tipo"
+                "Nombre", "Bloques", "Direccion 1er Bloque"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -401,7 +456,6 @@ public class interfaz extends javax.swing.JFrame {
             TablaAsignacion.getColumnModel().getColumn(0).setResizable(false);
             TablaAsignacion.getColumnModel().getColumn(1).setResizable(false);
             TablaAsignacion.getColumnModel().getColumn(2).setResizable(false);
-            TablaAsignacion.getColumnModel().getColumn(3).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -450,6 +504,12 @@ public class interfaz extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Tipo de archivo");
 
+        ArchivoABorrarSelect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ArchivoABorrarSelectActionPerformed(evt);
+            }
+        });
+
         CreateFileButton.setBackground(new java.awt.Color(0, 139, 252));
         CreateFileButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         CreateFileButton.setForeground(new java.awt.Color(0, 0, 0));
@@ -490,9 +550,9 @@ public class interfaz extends javax.swing.JFrame {
             }
         });
 
-        ArchivoActualizarSelect1.addActionListener(new java.awt.event.ActionListener() {
+        ArchivoActualizarSelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ArchivoActualizarSelect1ActionPerformed(evt);
+                ArchivoActualizarSelectActionPerformed(evt);
             }
         });
 
@@ -533,13 +593,13 @@ public class interfaz extends javax.swing.JFrame {
                             .addComponent(jSeparator9)
                             .addComponent(NameArchivoActualizarTextField)
                             .addComponent(CantidadBloquesTextField)
-                            .addComponent(ArchivoActualizarSelect, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ArchivoABorrarSelect, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(jSeparator5)
                             .addComponent(TipoArchivoSelect1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(ArchivoActualizarSelect1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(ArchivoActualizarSelect, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel5Layout.createSequentialGroup()
@@ -621,7 +681,7 @@ public class interfaz extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ArchivoActualizarSelect1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ArchivoActualizarSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -633,7 +693,7 @@ public class interfaz extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ArchivoActualizarSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ArchivoABorrarSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(BorrarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(58, 58, 58))
@@ -760,7 +820,7 @@ public class interfaz extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (validarCampoStringNoVacio(NameArchivoActualizarTextField, "Nombre del archivo nuevo")) {
             String nuevoNombre = NameArchivoActualizarTextField.getText();
-            String nombreActual = ArchivoActualizarSelect1.getSelectedItem().toString();
+            String nombreActual = ArchivoActualizarSelect.getSelectedItem().toString();
 
             // Actualizar el nombre en la estructura de datos
             actualizarNombreArchivo(raiz, nombreActual, nuevoNombre);
@@ -774,12 +834,15 @@ public class interfaz extends javax.swing.JFrame {
 
             // Actualizar el JComboBox
             actualizarComboBox(nombreActual, nuevoNombre);
+
+            // Actualizar el JTable
+            actualizarTablaAsignacion(modeloTablaAsignacion, nombreActual, nuevoNombre);
         }
     }//GEN-LAST:event_ActualizarButtonActionPerformed
 
-    private void ArchivoActualizarSelect1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArchivoActualizarSelect1ActionPerformed
+    private void ArchivoActualizarSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArchivoActualizarSelectActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_ArchivoActualizarSelect1ActionPerformed
+    }//GEN-LAST:event_ArchivoActualizarSelectActionPerformed
 
     private void TipoArchivoSelect1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TipoArchivoSelect1ActionPerformed
         // TODO add your handling code here:
@@ -796,8 +859,8 @@ public class interfaz extends javax.swing.JFrame {
         String nombre = NameArchivoTextField1.getText();
         String directorioSeleccionado = DirectorySelect.getSelectedItem().toString();
 
-        ArchivoActualizarSelect1.addItem(nombre);
         ArchivoActualizarSelect.addItem(nombre);
+        ArchivoABorrarSelect.addItem(nombre);
 
         switch (tipoArchivo) {
             case "Archivo":
@@ -850,15 +913,22 @@ public class interfaz extends javax.swing.JFrame {
     private void BorrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BorrarButtonActionPerformed
         // TODO add your handling code here:
 
-        String nombreAEliminar = ArchivoActualizarSelect1.getSelectedItem().toString();
+        String nombreAEliminar = ArchivoABorrarSelect.getSelectedItem().toString();
+
+        System.out.println(nombreAEliminar);
 
         if (nombreAEliminar != null && !nombreAEliminar.isEmpty()) {
             eliminarNodo(raiz, nombreAEliminar);
             eliminarNodoJTree(raizNode, nombreAEliminar);
             eliminarNodoComboBox(nombreAEliminar);
+            borrarTablaAsignacion(modeloTablaAsignacion, nombreAEliminar);
             storageDevicePanel.setText(sd.imprimir()); // Actualizar el StorageDevice
         }
     }//GEN-LAST:event_BorrarButtonActionPerformed
+
+    private void ArchivoABorrarSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArchivoABorrarSelectActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ArchivoABorrarSelectActionPerformed
 
     /**
      * @param args the command line arguments
@@ -899,8 +969,8 @@ public class interfaz extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ActualizarButton;
     private javax.swing.JButton AdminButton;
+    private javax.swing.JComboBox<String> ArchivoABorrarSelect;
     private javax.swing.JComboBox<String> ArchivoActualizarSelect;
-    private javax.swing.JComboBox<String> ArchivoActualizarSelect1;
     private javax.swing.JButton BorrarButton;
     private javax.swing.JTextField CantidadBloquesTextField;
     private javax.swing.JButton CargarButton;
@@ -912,12 +982,13 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JTable TablaAsignacion;
     private javax.swing.JComboBox<String> TipoArchivoSelect1;
     private javax.swing.JButton UserButton;
+    private javax.swing.JLabel bloquesDisponiblesText;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
