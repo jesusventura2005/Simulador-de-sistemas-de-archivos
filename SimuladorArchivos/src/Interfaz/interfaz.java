@@ -131,8 +131,7 @@ public class interfaz extends javax.swing.JFrame {
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
-            
-            
+
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             cantidadBloquesDisponibles = cantidadBloquesDisponibles - numeroBloques;
             storageDevicePanel.setText(sd.imprimir());
@@ -162,11 +161,22 @@ public class interfaz extends javax.swing.JFrame {
         modeloTabla.addRow(nuevaFila);
     }
 
+    private void actualizarTablaAsignacion(DefaultTableModel modeloTabla, String nombreArchivo, String nuevoNombreArchivo) {
+        for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
+            String nombreArchivoActual = modeloTabla.getValueAt(i, 0).toString();
+
+            // Compara el nombre de archivo actual con el nombre de archivo que se va a actualizar.
+            if (nombreArchivoActual.equals(nombreArchivo)) {
+                // Se encontró la fila. Actualiza el nombre del archivo en la primera columna.
+                modeloTabla.setValueAt(nuevoNombreArchivo, i, 0);
+                break;
+            }
+        }
+    }
+
     private void borrarTablaAsignacion(DefaultTableModel modeloTabla, String nombreArchivo) {
         for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
             String nombreArchivoActual = modeloTabla.getValueAt(i, 0).toString();
-//            System.out.println(nombreArchivoActual);
-//            System.out.println(nombreArchivo);
 
             // Compara el ID del proceso actual con el ID del proceso que se va a eliminar.
             if (nombreArchivoActual.equals(nombreArchivo)) {
@@ -282,7 +292,7 @@ public class interfaz extends javax.swing.JFrame {
      */
     public interfaz() {
         initComponents();
-        
+
         modeloTablaAsignacion = (DefaultTableModel) TablaAsignacion.getModel();
 
         CreateFileButton.setEnabled(false);
@@ -824,6 +834,9 @@ public class interfaz extends javax.swing.JFrame {
 
             // Actualizar el JComboBox
             actualizarComboBox(nombreActual, nuevoNombre);
+
+            // Actualizar el JTable
+            actualizarTablaAsignacion(modeloTablaAsignacion, nombreActual, nuevoNombre);
         }
     }//GEN-LAST:event_ActualizarButtonActionPerformed
 
@@ -901,7 +914,7 @@ public class interfaz extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         String nombreAEliminar = ArchivoABorrarSelect.getSelectedItem().toString();
-        
+
         System.out.println(nombreAEliminar);
 
         if (nombreAEliminar != null && !nombreAEliminar.isEmpty()) {
