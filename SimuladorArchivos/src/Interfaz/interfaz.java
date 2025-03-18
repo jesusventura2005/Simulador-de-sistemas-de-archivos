@@ -21,6 +21,7 @@ public class interfaz extends javax.swing.JFrame {
 
     String storageString;
     int cantidadBloques = 50;
+    public int cantidadBloquesDisponibles = cantidadBloques;
     StorageDevice sd = new StorageDevice(cantidadBloques);
     SimpleList initStorage = sd.getBloques();
     Directory raiz = new Directory("Raiz");
@@ -102,13 +103,17 @@ public class interfaz extends javax.swing.JFrame {
         return true; // Indica que la validación fue exitosa
     }
 
-    public static boolean validarCampoEntero(JTextField textField, String nombreCampo) {
+    public boolean validarCampoEnteroYBloques(JTextField textField, String nombreCampo) {
         try {
-            int valor = Integer.parseInt(textField.getText());
-            if (valor > 0) {
+            int bloquesAsignados = Integer.parseInt(textField.getText());
+
+            if (bloquesAsignados > 0 && bloquesAsignados <= cantidadBloquesDisponibles) {
                 return true;
-            } else {
+            } else if (bloquesAsignados <= 0) {
                 JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " debe ser un entero positivo mayor que 0", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else {
+                JOptionPane.showMessageDialog(null, "El campo: " + nombreCampo + " no puede ser mayor que " + cantidadBloquesDisponibles, "ERROR", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } catch (NumberFormatException ex) {
@@ -118,14 +123,16 @@ public class interfaz extends javax.swing.JFrame {
     }
 
     private void crearArchivo(String nombre, String directorioSeleccionado) {
-        if (validarCampoEntero(CantidadBloquesTextField, "Cantidad de Bloques del Archivo")
+        if (validarCampoEnteroYBloques(CantidadBloquesTextField, "Cantidad de Bloques del Archivo")
                 && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
 
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
             Files file = new Files(nombre, numeroBloques);
             file.agregarBloques(numeroBloques);
             sd.asignarBloques(file.getTamañoBloques(), nombre);
+            cantidadBloquesDisponibles = cantidadBloquesDisponibles - numeroBloques;
             storageDevicePanel.setText(sd.imprimir());
+            bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
 
             if (!directorioSeleccionado.equals("Raiz")) {
                 Directory padre = buscarDirectorio(directorioSeleccionado);
@@ -255,6 +262,7 @@ public class interfaz extends javax.swing.JFrame {
 
         storageString = initStorage.printList();
         storageDevicePanel.setText(storageString);
+        bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
     }
 
     private void agregarDirectorio(DefaultMutableTreeNode padre, String nombreDirectorio) {
@@ -277,9 +285,10 @@ public class interfaz extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         storageDevicePanel = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
+        bloquesDisponiblesText = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
+        jLabel3 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -333,39 +342,44 @@ public class interfaz extends javax.swing.JFrame {
         storageDevicePanel.setRows(5);
         jScrollPane2.setViewportView(storageDevicePanel);
 
-        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
-        jLabel2.setText("storage device");
+        bloquesDisponiblesText.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        bloquesDisponiblesText.setForeground(new java.awt.Color(0, 0, 0));
+        bloquesDisponiblesText.setText("0");
 
         jTree1.setModel(modelo);
         jScrollPane3.setViewportView(jTree1);
+
+        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("Storage Device");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(127, 127, 127)
-                        .addComponent(jLabel2))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(84, 84, 84)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addGap(32, 32, 32)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bloquesDisponiblesText)))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(jLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bloquesDisponiblesText)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
         );
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
@@ -911,12 +925,13 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JTable TablaAsignacion;
     private javax.swing.JComboBox<String> TipoArchivoSelect1;
     private javax.swing.JButton UserButton;
+    private javax.swing.JLabel bloquesDisponiblesText;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
