@@ -137,7 +137,7 @@ public class interfaz extends javax.swing.JFrame {
                 && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
 
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
-            Files file = new Files(nombre, numeroBloques);
+            Files file = new Files(nombre, numeroBloques, 0);
             file.setFatherDiretory(directorioSeleccionado);
 
             sd.asignarBloques(file.getTamañoBloques(), nombre);
