@@ -10,6 +10,7 @@ public class Directory {
 
     private String name;
     private SimpleList files;
+    private String fatherDirectory;
 
     public Directory(String nombre) {
         this.name = nombre;
@@ -39,6 +40,14 @@ public class Directory {
 
     public void setFiles(SimpleList files) {
         this.files = files;
+    }
+
+    public String getFatherDirectory() {
+        return fatherDirectory;
+    }
+
+    public void setFatherDirectory(String fatherDirectory) {
+        this.fatherDirectory = fatherDirectory;
     }
 
  

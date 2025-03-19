@@ -1,0 +1,21 @@
+{
+  "lista_directorios": [
+    {
+      "nombre": "PAIS",
+      "fatherDirectory": "Raiz"
+    },
+    {
+      "nombre": "ALEMANIA",
+      "fatherDirectory": "PAIS"
+    },
+    {
+      "nombre": "CHILE",
+      "fatherDirectory": "PAIS"
+    },
+    {
+      "nombre": "VZLA",
+      "fatherDirectory": "PAIS"
+    }
+  ],
+  "lista_archivos": []
+}
