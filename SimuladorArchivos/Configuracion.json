@@ -5,17 +5,56 @@
       "fatherDirectory": "Raiz"
     },
     {
-      "nombre": "ALEMANIA",
+      "nombre": "SPAIN",
       "fatherDirectory": "PAIS"
     },
     {
-      "nombre": "CHILE",
+      "nombre": "CHN",
       "fatherDirectory": "PAIS"
     },
     {
-      "nombre": "VZLA",
+      "nombre": "JPN",
+      "fatherDirectory": "PAIS"
+    },
+    {
+      "nombre": "ENG",
+      "fatherDirectory": "PAIS"
+    },
+    {
+      "nombre": "USA",
       "fatherDirectory": "PAIS"
     }
   ],
-  "lista_archivos": []
+  "lista_archivos": [
+    {
+      "nombre": "Root",
+      "tamañoBloques": 2,
+      "fatherDirectory": "Raiz"
+    },
+    {
+      "nombre": "Madrid",
+      "tamañoBloques": 2,
+      "fatherDirectory": "SPAIN"
+    },
+    {
+      "nombre": "Beijing",
+      "tamañoBloques": 2,
+      "fatherDirectory": "CHN"
+    },
+    {
+      "nombre": "Tokyo",
+      "tamañoBloques": 2,
+      "fatherDirectory": "JPN"
+    },
+    {
+      "nombre": "London",
+      "tamañoBloques": 2,
+      "fatherDirectory": "ENG"
+    },
+    {
+      "nombre": "Washington",
+      "tamañoBloques": 2,
+      "fatherDirectory": "USA"
+    }
+  ]
 }

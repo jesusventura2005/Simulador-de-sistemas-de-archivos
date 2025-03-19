@@ -9,11 +9,17 @@ import DataStructures.SimpleList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -146,7 +152,7 @@ public class interfaz extends javax.swing.JFrame {
             storageDevicePanel.setText(sd.imprimir());
             bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
             listaArchivos.insertLast(file);
-            añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), 0);
+            añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), file.getBloqueInicial() + 1);
 
             if (!directorioSeleccionado.equals("Raiz")) {
                 Directory padre = buscarDirectorio(directorioSeleccionado);
@@ -191,7 +197,7 @@ public class interfaz extends javax.swing.JFrame {
         };
         modeloTabla.addRow(nuevaFila);
     }
-    
+
     private void actualizarTablaAsignacion(DefaultTableModel modeloTabla, String nombreArchivo, String nuevoNombreArchivo) {
         for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
             String nombreArchivoActual = modeloTabla.getValueAt(i, 0).toString();
@@ -242,9 +248,10 @@ public class interfaz extends javax.swing.JFrame {
             if (obj instanceof Files) {
                 Files file = (Files) obj;
                 if (file.getNombre().equals(nombreAEliminar)) {
-                                        
                     sd.removerArchivo(nombreAEliminar, file.getBloqueInicial());
                     root.getFiles().remove(file);
+                    eliminarNodoComboBox(nombreAEliminar);
+                    listaArchivos.remove(file);
                     return;
                 }
             } else if (obj instanceof Directory) {
@@ -254,23 +261,29 @@ public class interfaz extends javax.swing.JFrame {
                     root.getFiles().remove(dir);
                     return;
                 } else {
-                    eliminarNodo(dir, nombreAEliminar); // Recursión para subdirectorios
+                    eliminarNodo(dir, nombreAEliminar); // Recursión
                 }
             }
         }
     }
 
     private void eliminarDirectorioRecursivamente(Directory dir) {
-        for (int i = 0; i < dir.getFiles().getSize(); i++) {
+        // Eliminar contenido primero
+        for (int i = dir.getFiles().getSize() - 1; i >= 0; i--) { // Recorrer en reversa para evitar problemas de índice
             Object obj = dir.getFiles().getValor(i);
             if (obj instanceof Files) {
                 Files file = (Files) obj;
-                sd.removerArchivo(file.getNombre() , file.getBloqueInicial());
+                sd.removerArchivo(file.getNombre(), file.getBloqueInicial());
+                eliminarNodoComboBox(file.getNombre());
+                listaArchivos.remove(file);
                 borrarTablaAsignacion(modeloTablaAsignacion, file.getNombre());
+                dir.getFiles().remove(file);
             } else if (obj instanceof Directory) {
-                eliminarDirectorioRecursivamente((Directory) obj); // Recursión
+                eliminarDirectorioRecursivamente((Directory) obj); // Recursión primero
+                dir.getFiles().remove((Directory) obj);
             }
         }
+        eliminarNodoComboBox(dir.getName());
         listaDirectorios.remove(dir);
     }
 
@@ -296,6 +309,12 @@ public class interfaz extends javax.swing.JFrame {
         for (int i = 0; i < ArchivoABorrarSelect.getItemCount(); i++) {
             if (ArchivoABorrarSelect.getItemAt(i).equals(nombreAEliminar)) {
                 ArchivoABorrarSelect.removeItemAt(i);
+                break;
+            }
+        }
+        for (int i = 0; i < DirectorySelect.getItemCount(); i++) {
+            if (DirectorySelect.getItemAt(i).equals(nombreAEliminar)) {
+                DirectorySelect.removeItemAt(i);
                 break;
             }
         }
@@ -790,9 +809,9 @@ public class interfaz extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(CargarButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(AdminButton, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(UserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(AdminButton, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(GuardarConfigButton)
                         .addGap(0, 226, Short.MAX_VALUE))
@@ -810,10 +829,11 @@ public class interfaz extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator3)
-                    .addComponent(CargarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(AdminButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(UserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(GuardarConfigButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(CargarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(UserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(AdminButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(GuardarConfigButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(720, 720, 720))
@@ -832,6 +852,95 @@ public class interfaz extends javax.swing.JFrame {
         /**
          * Buscador de archivos Accede todos los documentos del ordenador
          */
+        JFileChooser fileChooser = new JFileChooser();
+        String projectRoot = System.getProperty("user.dir");
+        fileChooser.setCurrentDirectory(new File(projectRoot));
+
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES); // Si quieres permitir seleccionar directorios
+
+        FileNameExtensionFilter imgFilter = new FileNameExtensionFilter("JSON Files", "json");
+        fileChooser.setFileFilter(imgFilter);
+
+        int result = fileChooser.showOpenDialog(this); // 'this' asumiendo que este código está dentro de un componente Swing
+
+        if (result == JFileChooser.APPROVE_OPTION) { // Verifica si el usuario seleccionó un archivo
+            File fileName = fileChooser.getSelectedFile();
+
+            if (fileName.isFile()) { // Asegúrate de que es un archivo y no un directorio (si permites ambos)
+                try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+                    Gson gson = new Gson();
+                    JsonObject json = gson.fromJson(reader, JsonObject.class);
+
+                    JsonArray lista_directorios = json.get("lista_directorios").getAsJsonArray();
+                    JsonArray lista_archivos = json.get("lista_archivos").getAsJsonArray();
+
+                    for (JsonElement directorioElement : lista_directorios) {
+                        JsonObject directorioJson = directorioElement.getAsJsonObject();
+
+                        // Elementos del directorio
+                        String nombre = directorioJson.get("nombre").getAsString();
+                        String fatherDirectory = directorioJson.get("fatherDirectory").getAsString();
+
+                        Directory directorio = new Directory(nombre);
+                        DirectorySelect.addItem(directorio.getName());
+                        listaDirectorios.insertLast(directorio);
+                        ArchivoActualizarSelect.addItem(nombre);
+                        ArchivoABorrarSelect.addItem(nombre);
+
+                        if (!fatherDirectory.equals("Raiz")) {
+                            Directory padre = buscarDirectorio(fatherDirectory);
+                            if (padre != null) {
+                                padre.agregar(directorio);
+                                agregarDirectorio(buscarNodo(raizNode, fatherDirectory), nombre);
+                                directorio.setFatherDirectory(fatherDirectory);
+                            }
+                        } else {
+                            agregarDirectorio(raizNode, nombre);
+                            raiz.agregar(directorio);
+                            directorio.setFatherDirectory(fatherDirectory);
+                        }
+                    }
+
+                    for (JsonElement fileElement : lista_archivos) {
+                        JsonObject archivoJson = fileElement.getAsJsonObject();
+
+                        String nombre = archivoJson.get("nombre").getAsString();
+                        int tamañoBloques = archivoJson.get("tamañoBloques").getAsInt();
+                        String fatherDirectory = archivoJson.get("fatherDirectory").getAsString();
+
+                        Files file = new Files(nombre, tamañoBloques, 0);
+                        file.setFatherDiretory(fatherDirectory);
+
+                        sd.asignarBloques(file.getTamañoBloques(), nombre);
+                        file.setBloqueInicial(sd.obtenerPrimerbloque(file.getNombre()));
+                        cantidadBloquesDisponibles = cantidadBloquesDisponibles - tamañoBloques;
+                        storageDevicePanel.setText(sd.imprimir());
+                        bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
+                        listaArchivos.insertLast(file);
+                        añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), file.getBloqueInicial() + 1);
+                        ArchivoActualizarSelect.addItem(nombre);
+                        ArchivoABorrarSelect.addItem(nombre);
+
+                        if (!fatherDirectory.equals("Raiz")) {
+                            Directory padre = buscarDirectorio(fatherDirectory);
+                            if (padre != null) {
+                                padre.agregar(file);
+                                agregarDirectorio(buscarNodo(raizNode, fatherDirectory), nombre);
+                            }
+                        } else {
+                            agregarDirectorio(raizNode, nombre);
+                            raiz.agregar(file);
+                            listaDirectorios.printListToConsole();
+                        }
+                    }
+
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else if (fileName.isDirectory()) {
+                JOptionPane.showMessageDialog(this, "Seleccionaste un directorio.  Por favor, selecciona un archivo JSON.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
     }//GEN-LAST:event_CargarButtonActionPerformed
 
@@ -934,11 +1043,9 @@ public class interfaz extends javax.swing.JFrame {
 
         String nombreAEliminar = ArchivoABorrarSelect.getSelectedItem().toString();
 
-
         if (nombreAEliminar != null && !nombreAEliminar.isEmpty()) {
             eliminarNodo(raiz, nombreAEliminar);
             eliminarNodoJTree(raizNode, nombreAEliminar);
-            eliminarNodoComboBox(nombreAEliminar);
             borrarTablaAsignacion(modeloTablaAsignacion, nombreAEliminar);
             storageDevicePanel.setText(sd.imprimir()); // Actualizar el StorageDevice
         }
@@ -974,6 +1081,8 @@ public class interfaz extends javax.swing.JFrame {
                 archivoJson.addProperty("nombre", archivo.getNombre());
                 archivoJson.addProperty("tamañoBloques", archivo.getTamañoBloques());
                 archivoJson.addProperty("fatherDirectory", archivo.getFatherDiretory());
+
+                archivosArray.add(archivoJson);
             }
 
             json.add("lista_directorios", directoriosArray);

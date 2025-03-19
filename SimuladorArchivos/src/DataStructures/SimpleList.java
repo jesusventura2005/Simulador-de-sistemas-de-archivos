@@ -1,6 +1,7 @@
 package DataStructures;
 
 import simuladorarchivos.Directory;
+import simuladorarchivos.Files;
 
 public class SimpleList {
 
@@ -116,6 +117,68 @@ public class SimpleList {
         }
     }
 
+    public void removePorNombre(String nombre) {
+        if (isEmpty()) {
+            return;
+        }
+
+        // Caso especial: el primer nodo coincide
+        if (pFirst != null && pFirst.getInfo() != null) {
+            if (pFirst.getInfo() instanceof Files) {
+                Files archivo = (Files) pFirst.getInfo();
+                if (archivo.getNombre().equals(nombre)) {
+                    pFirst = pFirst.getpNext();
+                    size--;
+                    if (pFirst == null) {
+                        pLast = null;
+                    }
+                    return;
+                }
+            } else if (pFirst.getInfo() instanceof Directory) {
+                Directory directorio = (Directory) pFirst.getInfo();
+                if (directorio.getName().equals(nombre)) {
+                    pFirst = pFirst.getpNext();
+                    size--;
+                    if (pFirst == null) {
+                        pLast = null;
+                    }
+                    return;
+                }
+            }
+        }
+
+        Nodo prev = pFirst;
+        Nodo current = pFirst.getpNext();
+
+        while (current != null) {
+            if (current.getInfo() != null) {
+                if (current.getInfo() instanceof Files) {
+                    Files archivo = (Files) current.getInfo();
+                    if (archivo.getNombre().equals(nombre)) {
+                        prev.setpNext(current.getpNext());
+                        size--;
+                        if (current == pLast) {
+                            pLast = prev;
+                        }
+                        return;
+                    }
+                } else if (current.getInfo() instanceof Directory) {
+                    Directory directorio = (Directory) current.getInfo();
+                    if (directorio.getName().equals(nombre)) {
+                        prev.setpNext(current.getpNext());
+                        size--;
+                        if (current == pLast) {
+                            pLast = prev;
+                        }
+                        return;
+                    }
+                }
+            }
+            prev = current;
+            current = current.getpNext();
+        }
+    }
+
     public String printList() {
         if (isEmpty()) {
             return "La lista está vacía.";
@@ -184,13 +247,13 @@ public class SimpleList {
         int primerBloque = 0;
 
         for (int i = 0; i < index; i++) {
-           
+
             if (actual.getInfo().equals(elemento + " " + "0")) {
                 primerBloque = i;
                 break;
 
             }
-             actual = actual.getpNext();
+            actual = actual.getpNext();
 
         }
 
