@@ -40,43 +40,40 @@ public class SimpleList {
         }
         return false;
     }
-    
-    public void encontraDirectorio(String nombreDirectorio, Directory directory){
+
+    public void encontraDirectorio(String nombreDirectorio, Directory directory) {
         Nodo actual = pFirst;
-        while (actual.getInfo() != directory){
-        actual.getpNext();
+        while (actual.getInfo() != directory) {
+            actual.getpNext();
 
         }
-    
+
     }
 
-    
-    
     public void printListToConsole() {
-    if (isEmpty()) {
-        System.out.println("La lista está vacía.");
-        return;
-    }
+        if (isEmpty()) {
+            System.out.println("La lista está vacía.");
+            return;
+        }
 
-    Nodo actual = pFirst;
-    int count = 0;
+        Nodo actual = pFirst;
+        int count = 0;
 
-    while (actual != null) {
-        System.out.print("[" + actual.getInfo() + "] ");
-        actual = actual.getpNext();
-        count++;
+        while (actual != null) {
+            System.out.print("[" + actual.getInfo() + "] ");
+            actual = actual.getpNext();
+            count++;
 
-        if (count % 5 == 0) {
-            System.out.println(); 
+            if (count % 5 == 0) {
+                System.out.println();
+            }
+        }
+
+        if (count % 5 != 0) {
+            System.out.println();
         }
     }
 
-    if (count % 5 != 0) {
-        System.out.println(); 
-    }
-}
-    
-    
     public void insertLast(Object x) {
         Nodo nuevo = new Nodo(x);
         if (this.isEmpty()) {
@@ -124,7 +121,7 @@ public class SimpleList {
             return "La lista está vacía.";
         }
 
-        StringBuilder sb = new StringBuilder(); 
+        StringBuilder sb = new StringBuilder();
         Nodo actual = getpFirst();
         int count = 0;
 
@@ -134,7 +131,7 @@ public class SimpleList {
             count++;
 
             if (count % 5 == 0) {
-                sb.append("\n"); 
+                sb.append("\n");
             }
         }
 
@@ -144,9 +141,6 @@ public class SimpleList {
 
         return sb.toString(); // Retorna la cadena construida
     }
-      
-    
-    
 
     public void vaciar() {
         this.pFirst = null;
@@ -183,6 +177,25 @@ public class SimpleList {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public int primerBloque(Object elemento, int index) {
+        Nodo actual = pFirst;
+        int primerBloque = 0;
+
+        for (int i = 0; i < index; i++) {
+           
+            if (actual.getInfo().equals(elemento + " " + "0")) {
+                primerBloque = i;
+                break;
+
+            }
+             actual = actual.getpNext();
+
+        }
+
+        return primerBloque;
+
     }
 
     public void replaceBLock(Object elemento, int index) {

@@ -129,14 +129,17 @@ public class interfaz extends javax.swing.JFrame {
                 && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
 
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
-            Files file = new Files(nombre, numeroBloques);
+            
+            
+            
+            Files file = new Files(nombre, numeroBloques,0 );
             file.agregarBloques(numeroBloques);
-
             sd.asignarBloques(file.getTamañoBloques(), nombre);
+            file.setBloqueInicial(sd.obtenerPrimerbloque(file.getNombre()));
             cantidadBloquesDisponibles = cantidadBloquesDisponibles - numeroBloques;
             storageDevicePanel.setText(sd.imprimir());
             bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
-            añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), 0);
+            añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), file.getBloqueInicial() + 1);
 
             if (!directorioSeleccionado.equals("Raiz")) {
                 Directory padre = buscarDirectorio(directorioSeleccionado);
@@ -160,7 +163,7 @@ public class interfaz extends javax.swing.JFrame {
         };
         modeloTabla.addRow(nuevaFila);
     }
-
+    
     private void actualizarTablaAsignacion(DefaultTableModel modeloTabla, String nombreArchivo, String nuevoNombreArchivo) {
         for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
             String nombreArchivoActual = modeloTabla.getValueAt(i, 0).toString();
@@ -230,7 +233,8 @@ public class interfaz extends javax.swing.JFrame {
             if (obj instanceof Files) {
                 Files file = (Files) obj;
                 if (file.getNombre().equals(nombreAEliminar)) {
-                    sd.removerArchivo(nombreAEliminar);
+                                        
+                    sd.removerArchivo(nombreAEliminar, file.getBloqueInicial());
                     root.getFiles().remove(file);
                     return;
                 }
@@ -252,7 +256,8 @@ public class interfaz extends javax.swing.JFrame {
             Object obj = dir.getFiles().getValor(i);
             if (obj instanceof Files) {
                 Files file = (Files) obj;
-                sd.removerArchivo(file.getNombre());
+                sd.removerArchivo(file.getNombre() , file.getBloqueInicial());
+                borrarTablaAsignacion(modeloTablaAsignacion, file.getNombre());
             } else if (obj instanceof Directory) {
                 eliminarDirectorioRecursivamente((Directory) obj); // Recursión
             }
@@ -915,7 +920,6 @@ public class interfaz extends javax.swing.JFrame {
 
         String nombreAEliminar = ArchivoABorrarSelect.getSelectedItem().toString();
 
-        System.out.println(nombreAEliminar);
 
         if (nombreAEliminar != null && !nombreAEliminar.isEmpty()) {
             eliminarNodo(raiz, nombreAEliminar);

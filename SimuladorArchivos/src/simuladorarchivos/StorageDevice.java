@@ -25,10 +25,16 @@ public class StorageDevice {
         this.tamañoSD = tamañoSD;
         this.bloques = new SimpleList();
         for (int i = 0; i < tamañoSD; i++) {
+                
             bloques.insertLast("");
         }
     }
     
+    public int obtenerPrimerbloque(Object elemento){
+            
+        return bloques.primerBloque(elemento, tamañoSD);
+        
+    }
     
     
     public  String imprimir(){
@@ -82,11 +88,14 @@ public class StorageDevice {
     return primerBloque; 
 }
     
-public void removerArchivo(String nombreArchivo) {
+public void removerArchivo(String nombreArchivo, int primerBloque) {
     int i = 0;
+    int j = 0;
     while (i < bloques.getSize()) {
-        if (bloques.getValor(i).equals(nombreArchivo + " " + i)) {
+                    
+        if (bloques.getValor(i).equals(nombreArchivo + " " + j )) {
             bloques.replaceBLock("", i); // Reemplaza con bloque libre
+            j ++;
         } else {
             i++; // Avanza solo si no se eliminó un elemento
         }

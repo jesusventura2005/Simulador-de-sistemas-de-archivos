@@ -14,11 +14,13 @@ public class Files {
     private int tamañoArchivo;
     private String permisos;
     private String modo;
+    private int bloqueInicial;
 
-    public Files(String nombre, int tamañoBloques) {
+    public Files(String nombre, int tamañoBloques , int bloqueInicial) {
         this.nombre = nombre;
         this.lista = new SimpleList();
         this.tamañoBloques = tamañoBloques;
+        this.bloqueInicial = bloqueInicial;
 
     }
 
@@ -27,13 +29,22 @@ public class Files {
             lista.insertLast(nombre + " " + i);
         }
     }
-
-    /// Aun no se si hacer los metodos aqui o en el interfaz , hablar con el chinox 
-
     
-   
+    public void encontrarBloque(String nombre){
+        
     
-    // Getters y setters 
+    
+    }
+    
+    
+    public int getBloqueInicial() {
+        return bloqueInicial;
+    }
+
+    public void setBloqueInicial(int bloqueInicial) {
+        this.bloqueInicial = bloqueInicial;
+    }
+
     public String getNombre() {
         return nombre;
     }
