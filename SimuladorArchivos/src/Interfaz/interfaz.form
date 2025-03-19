@@ -739,6 +739,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="GUARDAR CONFIGURACION"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="GuardarConfigButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

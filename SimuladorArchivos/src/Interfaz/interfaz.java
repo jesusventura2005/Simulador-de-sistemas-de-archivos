@@ -4,7 +4,14 @@
  */
 package Interfaz;
 
+import DataStructures.Nodo;
 import DataStructures.SimpleList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -24,13 +31,14 @@ public class interfaz extends javax.swing.JFrame {
     int cantidadBloques = 50;
     public int cantidadBloquesDisponibles = cantidadBloques;
     public DefaultTableModel modeloTablaAsignacion;
-    StorageDevice sd = new StorageDevice(cantidadBloques);
-    SimpleList initStorage = sd.getBloques();
-    Directory raiz = new Directory("Raiz");
+    public StorageDevice sd = new StorageDevice(cantidadBloques);
+    public SimpleList initStorage = sd.getBloques();
+    public Directory raiz = new Directory("Raiz");
 
-    SimpleList listaDirectorios = new SimpleList();
-    DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raíz");
-    DefaultTreeModel modelo = new DefaultTreeModel(raizNode);
+    public SimpleList listaDirectorios = new SimpleList();
+    public SimpleList listaArchivos = new SimpleList();
+    public DefaultMutableTreeNode raizNode = new DefaultMutableTreeNode("Raíz");
+    public DefaultTreeModel modelo = new DefaultTreeModel(raizNode);
 
     private void actualizarNombreArchivo(Directory root, String nombreActual, String nuevoNombre) {
         if (root != null) {
@@ -129,17 +137,16 @@ public class interfaz extends javax.swing.JFrame {
                 && validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
 
             int numeroBloques = Integer.parseInt(CantidadBloquesTextField.getText());
-            
-            
-            
-            Files file = new Files(nombre, numeroBloques,0 );
-            file.agregarBloques(numeroBloques);
+            Files file = new Files(nombre, numeroBloques);
+            file.setFatherDiretory(directorioSeleccionado);
+
             sd.asignarBloques(file.getTamañoBloques(), nombre);
             file.setBloqueInicial(sd.obtenerPrimerbloque(file.getNombre()));
             cantidadBloquesDisponibles = cantidadBloquesDisponibles - numeroBloques;
             storageDevicePanel.setText(sd.imprimir());
             bloquesDisponiblesText.setText(String.valueOf(cantidadBloquesDisponibles));
-            añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), file.getBloqueInicial() + 1);
+            listaArchivos.insertLast(file);
+            añadirTablaAsignacion(modeloTablaAsignacion, file.getNombre(), file.getTamañoBloques(), 0);
 
             if (!directorioSeleccionado.equals("Raiz")) {
                 Directory padre = buscarDirectorio(directorioSeleccionado);
@@ -151,6 +158,27 @@ public class interfaz extends javax.swing.JFrame {
                 agregarDirectorio(raizNode, nombre);
                 raiz.agregar(file);
                 listaDirectorios.printListToConsole();
+            }
+        }
+    }
+
+    private void crearDirectorio(String nombre, String directorioSeleccionado) {
+        if (validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
+            Directory directorio = new Directory(nombre);
+            DirectorySelect.addItem(directorio.getName());
+            listaDirectorios.insertLast(directorio);
+
+            if (!directorioSeleccionado.equals("Raiz")) {
+                Directory padre = buscarDirectorio(directorioSeleccionado);
+                if (padre != null) {
+                    padre.agregar(directorio);
+                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
+                    directorio.setFatherDirectory(directorioSeleccionado);
+                }
+            } else {
+                agregarDirectorio(raizNode, nombre);
+                raiz.agregar(directorio);
+                directorio.setFatherDirectory(directorioSeleccionado);
             }
         }
     }
@@ -186,25 +214,6 @@ public class interfaz extends javax.swing.JFrame {
                 // Se encontró el proceso. Elimina la fila correspondiente de la tabla.
                 modeloTabla.removeRow(i);
                 break; // Importante: Salir del bucle después de eliminar la fila.
-            }
-        }
-    }
-
-    private void crearDirectorio(String nombre, String directorioSeleccionado) {
-        if (validarCampoStringNoVacio(NameArchivoTextField1, "Nombre del archivo/directorio")) {
-            Directory directorio = new Directory(nombre);
-            DirectorySelect.addItem(directorio.getName());
-            listaDirectorios.insertLast(directorio);
-
-            if (!directorioSeleccionado.equals("Raiz")) {
-                Directory padre = buscarDirectorio(directorioSeleccionado);
-                if (padre != null) {
-                    padre.agregar(directorio);
-                    agregarDirectorio(buscarNodo(raizNode, directorioSeleccionado), nombre);
-                }
-            } else {
-                agregarDirectorio(raizNode, nombre);
-                raiz.agregar(directorio);
             }
         }
     }
@@ -761,6 +770,11 @@ public class interfaz extends javax.swing.JFrame {
         GuardarConfigButton.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
         GuardarConfigButton.setForeground(new java.awt.Color(28, 28, 28));
         GuardarConfigButton.setText("GUARDAR CONFIGURACION");
+        GuardarConfigButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GuardarConfigButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -933,6 +947,50 @@ public class interfaz extends javax.swing.JFrame {
     private void ArchivoABorrarSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ArchivoABorrarSelectActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ArchivoABorrarSelectActionPerformed
+
+    private void GuardarConfigButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarConfigButtonActionPerformed
+        // TODO add your handling code here:
+        try {
+
+            JsonObject json = new JsonObject();
+
+            JsonArray directoriosArray = new JsonArray();
+            for (Nodo nodo = listaDirectorios.getpFirst(); nodo != null; nodo = nodo.getpNext()) {
+                Directory directorio = (Directory) nodo.getInfo();
+                JsonObject directorioJson = new JsonObject();
+
+                directorioJson.addProperty("nombre", directorio.getName());
+                directorioJson.addProperty("fatherDirectory", directorio.getFatherDirectory());
+
+                directoriosArray.add(directorioJson);
+
+            }
+
+            JsonArray archivosArray = new JsonArray();
+            for (Nodo nodoArchivo = listaArchivos.getpFirst(); nodoArchivo != null; nodoArchivo = nodoArchivo.getpNext()) {
+                Files archivo = (Files) nodoArchivo.getInfo();
+                JsonObject archivoJson = new JsonObject();
+
+                archivoJson.addProperty("nombre", archivo.getNombre());
+                archivoJson.addProperty("tamañoBloques", archivo.getTamañoBloques());
+                archivoJson.addProperty("fatherDirectory", archivo.getFatherDiretory());
+            }
+
+            json.add("lista_directorios", directoriosArray);
+            json.add("lista_archivos", archivosArray);
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String jsonString = gson.toJson(json);
+
+            try (FileWriter writer = new FileWriter("Configuracion.json")) {
+                gson.toJson(json, writer); // Directly write to the file using Gson
+                //writer.write(jsonString);  No need to write the string manually
+                JOptionPane.showMessageDialog(null, "Configuración guardada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error de E/S", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_GuardarConfigButtonActionPerformed
 
     /**
      * @param args the command line arguments
